@@ -31,19 +31,20 @@ h1{margin:0;font-weight:800;font-stretch:112%;font-size:clamp(28px,3.2vw,36px);l
 .eqbtns{display:flex;gap:8px;flex-wrap:wrap}
 main{padding-block:4px 28px}
 #cal{display:flex;flex-direction:column;gap:14px}
-.band{display:grid;grid-template-columns:124px minmax(0,1fr);gap:10px;padding:12px;border-radius:22px;background:var(--band)}
-.wkl{display:flex;flex-direction:column;justify-content:center;gap:4px;padding-left:8px}
-.wkl b{color:var(--sun);font-size:21px;font-weight:800;line-height:1.1}
+.band{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;padding:10px 12px 12px;border-radius:22px;background:var(--band)}
+.wkl{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px;padding:0 4px}
+.wkl b{color:var(--sun);font-size:19px;font-weight:800;line-height:1.1}
 .wkl span{color:var(--mut);font-size:14px}
-.days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px}
-.day{display:flex;flex-direction:column;gap:7px;min-height:150px;padding:10px 10px 8px;border-radius:16px;background:var(--card)}
+.days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:13px;padding:6px 0 0 6px}
+.day{display:flex;flex-direction:column;gap:7px;min-height:150px;padding:10px 8px 8px;border-radius:16px;background:var(--card)}
 .day.dom{background:var(--coral)}
 .day.out{background:transparent;border:1px dashed rgba(255,255,255,.25);min-height:0}
-.dtop{display:flex;flex-direction:column;align-items:center;gap:2px;padding-bottom:7px;border-bottom:1px solid rgba(255,255,255,.22);text-align:center}
-.num{font-weight:800;font-stretch:112%;font-size:38px;line-height:1}
-.wdn{font-size:14px;font-weight:600;color:var(--mut)}
-.day.dom .wdn{color:#FFF1EC}
-.day.out .num,.day.out .wdn{opacity:.4}
+.day{position:relative}
+.dtop{display:flex;align-items:center;min-height:36px;padding:0 0 8px 37px;border-bottom:1px solid rgba(255,255,255,.25)}
+.num{position:absolute;left:-10px;top:-10px;display:grid;place-items:center;width:46px;height:46px;border-radius:50%;background:#4472C4;border:2px solid #2F528F;color:#fff;font-weight:800;font-size:24px;line-height:1;box-shadow:0 2px 4px rgba(0,0,0,.25)}
+.wdn{font-size:14px;letter-spacing:-.01em;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.day.dom .wdn{color:#fff}
+.day.out .num,.day.out .wdn{opacity:.35}
 .fer-tag{font-size:12.5px;line-height:1.3;color:#FFE7A3;text-align:center}
 .day.dom .fer-tag{color:#fff}
 .wslot{display:block;min-height:24px;margin-top:auto;padding-top:7px;border-top:1px solid rgba(255,255,255,.25)}
@@ -86,11 +87,9 @@ table.sum{width:100%;min-width:680px;border-collapse:collapse;font-variant-numer
 .btn.pri{background:var(--sun);border-color:var(--sun);color:var(--deep)}
 .btn.danger{background:var(--coral);border-color:var(--coral);color:#fff}
 .btn:disabled{opacity:.5;cursor:default}
-@media(max-width:900px){.band{grid-template-columns:minmax(0,1fr)}.wkl{flex-direction:row;align-items:baseline;gap:10px;padding:4px 6px}}
 @media(max-width:760px){
  .days{grid-template-columns:minmax(0,1fr)}
  .day{min-height:0}.day.out{display:none}
- .dtop{flex-direction:row;justify-content:center;gap:10px;align-items:baseline}
  .nm{min-height:44px;font-size:16px}.add{min-height:44px}
  .tabs{width:100%}.tab{flex:1;min-height:44px}
 }
@@ -243,8 +242,9 @@ function drawPDF(jsPDF){
  const W=297,H=210,M=6,wk=weeks(),S=clean(st);S.equipe=st.equipe;
  const BG=[14,74,90],BAND=[18,90,108],CARD=[26,113,134],SUN=[255,201,60],CORAL=[231,111,81],MUT=[207,230,236],WHITE=[255,255,255],TEAL=[14,74,90],GREY=[61,100,112],LINEC=[214,228,232],ROSE=[255,241,236];
  const mix=(a,b,p)=>a.map((v,i)=>Math.round(v+(b[i]-v)*p));
+ const badge=(x,cy,d,faded)=>{const r=4.5,bx=x+3.3,by=cy+3.3;doc.setLineWidth(0.45);doc.setFillColor(...(faded?mix(BAND,[68,114,196],0.35):[68,114,196]));doc.setDrawColor(...(faded?mix(BAND,[47,82,143],0.35):[47,82,143]));doc.circle(bx,by,r,'FD');doc.setFont('helvetica','bold');doc.setFontSize(String(d).length>1?13.5:15);doc.setTextColor(...(faded?mix(BAND,WHITE,0.5):WHITE));doc.text(String(d),bx,by+1.75,{align:'center'});doc.setLineWidth(0.2)};
  const HEADH=11,SUMH=29,GAP=1.6,bandsTop=M+HEADH,bandsH=H-M-SUMH-GAP-bandsTop;
- const wt=wk.map(week=>week.some(c=>!c.out&&c.d>=S.inicio)?1:0.75),wsum=wt.reduce((a,b)=>a+b,0),unit=(bandsH-GAP*(wk.length-1))/wsum;
+ const wt=wk.map(week=>week.some(c=>!c.out&&c.d>=S.inicio)?1:0.62),wsum=wt.reduce((a,b)=>a+b,0),unit=(bandsH-GAP*(wk.length-1))/wsum;
  const LBLW=19,cg=1.4,innerX=M+LBLW,cardW=(W-M-1.2-innerX-cg*6)/7;
  ['manha','tarde'].forEach((k,pi)=>{
   if(pi)doc.addPage();
@@ -263,18 +263,18 @@ function drawPDF(jsPDF){
    doc.setFont('helvetica','normal');doc.setFontSize(6.5);doc.setTextColor(...MUT);doc.text(fmt(week[0])+' a',M+2,y+bh/2+1.8);doc.text(fmt(week[6]),M+2,y+bh/2+4.6);
    week.forEach((cl,j)=>{
     const x=innerX+j*(cardW+cg),cy=y+1.2,ch=bh-2.4,cx=x+cardW/2,dom=cl.wd===0,cc=dom?CORAL:CARD;
-    if(cl.out){doc.setDrawColor(...mix(BAND,WHITE,0.25));doc.setLineWidth(0.2);doc.setLineDashPattern([0.8,0.8],0);doc.roundedRect(x,cy,cardW,ch,2,2,'S');doc.setLineDashPattern([],0);doc.setTextColor(...mix(BAND,WHITE,0.4));doc.setFont('helvetica','bold');doc.setFontSize(21);doc.text(String(cl.d),cx,cy+7.9,{align:'center'});doc.setFont('helvetica','normal');doc.setFontSize(7.2);doc.text(WDL[cl.wd],cx,cy+11.3,{align:'center'});return}
+    if(cl.out){doc.setDrawColor(...mix(BAND,WHITE,0.25));doc.setLineWidth(0.2);doc.setLineDashPattern([0.8,0.8],0);doc.roundedRect(x,cy,cardW,ch,2,2,'S');doc.setLineDashPattern([],0);badge(x,cy,cl.d,true);doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(...mix(BAND,WHITE,0.45));doc.text(WDL[cl.wd],x+9.8,cy+5.4);return}
     doc.setFillColor(...cc);doc.roundedRect(x,cy,cardW,ch,2,2,'F');
     const sub=dom?ROSE:MUT,lc=mix(cc,WHITE,0.32);
-    doc.setTextColor(...WHITE);doc.setFont('helvetica','bold');doc.setFontSize(21);doc.text(String(cl.d),cx,cy+7.9,{align:'center'});
-    doc.setFont('helvetica','normal');doc.setFontSize(7.2);doc.setTextColor(...sub);doc.text(WDL[cl.wd],cx,cy+11.3,{align:'center'});
-    doc.setDrawColor(...lc);doc.setLineWidth(0.25);doc.line(x+1.5,cy+12.7,x+cardW-1.5,cy+12.7);
+    doc.setFont('helvetica','normal');doc.setFontSize(9.5);doc.setTextColor(...WHITE);doc.text(WDL[cl.wd],x+9.8,cy+5.5);
+    doc.setDrawColor(...lc);doc.setLineWidth(0.25);doc.line(x+1.5,cy+9,x+cardW-1.5,cy+9);
+    badge(x,cy,cl.d,false);
     const w=working(S,k,cl.d),fy=cy+ch-1.9,sepY=cy+ch-6;
     doc.setDrawColor(...lc);doc.line(x+1.5,sepY,x+cardW-1.5,sepY);
     if(w!==null){doc.setFont('helvetica','bold');doc.setFontSize(11);doc.setTextColor(...(dom?[255,246,214]:SUN));doc.text(String(w),x+1.8,fy);const nw=doc.getTextWidth(String(w));doc.setFontSize(7.5);doc.setTextColor(...WHITE);doc.text('trabalham',x+2.8+nw,fy)}
     else if(cl.d<S.inicio){doc.setFont('helvetica','normal');doc.setFontSize(6.3);doc.setTextColor(...sub);doc.text('Antes da escala',x+1.8,fy)}
     if(FERS[cl.d]){doc.setFont('helvetica','bold');doc.setFontSize(5.3);doc.setTextColor(255,231,163);doc.text(FERS[cl.d],x+cardW-1.4,fy,{align:'right'})}
-    const L=S[k][cl.d]||[],yE=cy+13.6,bottom=sepY-0.8;
+    const L=S[k][cl.d]||[],yE=cy+9.9,bottom=sepY-0.8;
     if(bottom-yE<2)return;
     if(!L.length){doc.setDrawColor(...mix(cc,WHITE,0.22));for(let yy=yE+4.6;yy<bottom-1.6;yy+=4.8)doc.line(x+1.8,yy,x+cardW-1.8,yy);return}
     const avail=bottom-yE,cols=L.length*3.9>avail?2:1,nr=Math.ceil(L.length/cols);let lh=Math.min(4.8,avail/nr);
