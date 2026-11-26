@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Escala Janeiro 2027</title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..800&display=swap" rel="stylesheet"><style id="css">
+/* VOICE: plano de folgas da operação, de leitura rápida no mural e fácil de preencher.
+   IDEA: faixas semanais, como as fitas de turno coladas no quadro do galpão.
+   PICTURE: cinco faixas, uma por semana, com quadrados de dia em azul-petróleo e domingo em coral.
+   COLOUR and TYPE: azul-petróleo, amarelo-sinal e coral; Archivo expandida nos títulos e datas.
+   LAYOUT: cabeçalho com abas, linha da equipe, faixas semanais, resumo em cartão branco no fim. */
+:root{color-scheme:dark;--bg:#0E4A5A;--band:#125A6C;--card:#1A7186;--sun:#FFC93C;--coral:#E76F51;--ink:#FFFFFF;--mut:#CFE6EC;--deep:#0B3B48}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Archivo,system-ui,sans-serif;overflow-x:clip}
+.wrap{max-width:1440px;margin:0 auto;padding:0 max(2.5vw,12px)}
+.tophd{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 24px;padding-block:14px 4px}
+.ttlrow{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px}
+.kick{color:var(--sun);font-weight:700;font-size:17px}
+h1{margin:0;font-weight:800;font-stretch:112%;font-size:clamp(28px,3.2vw,36px);line-height:1.05}
+.side{display:flex;flex-direction:column;align-items:flex-end;gap:12px;max-width:440px}
+.lead{margin:0;color:var(--mut);font-size:16px;text-align:right}
+.tabs{display:flex;gap:4px;padding:4px;border-radius:999px;background:var(--deep)}
+.tab{min-height:40px;padding:0 22px;border:0;border-radius:999px;background:transparent;color:var(--ink);font:700 16px Archivo,sans-serif;cursor:pointer}
+.tab[aria-selected=true]{background:var(--sun);color:var(--deep)}
+.tab:focus-visible,.btn:focus-visible,.add:focus-visible,.link:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+.team{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 12px;padding-block:0 10px;font-size:15px}
+.team b{font-weight:700;font-size:15px}
+#eql{color:var(--mut)}
+.link{min-height:44px;padding:0 4px;border:0;background:none;color:var(--sun);font:700 15px Archivo,sans-serif;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.eqedit{display:grid;gap:10px;padding:16px;margin-bottom:14px;border-radius:18px;background:var(--band)}
+.eqedit[hidden]{display:none}
+.eqedit label{font-weight:700}
+.eqedit textarea{width:min(420px,100%);min-height:200px;padding:10px 12px;border:0;border-radius:10px;background:#fff;color:#0E4A5A;font:16px/1.5 Archivo,sans-serif}
+.eqedit p{margin:0;color:var(--mut);font-size:14px}
+.eqbtns{display:flex;gap:8px;flex-wrap:wrap}
+main{padding-block:4px 28px}
+#cal{display:flex;flex-direction:column;gap:14px}
+.band{display:grid;grid-template-columns:124px minmax(0,1fr);gap:10px;padding:12px;border-radius:22px;background:var(--band)}
+.wkl{display:flex;flex-direction:column;justify-content:center;gap:4px;padding-left:8px}
+.wkl b{color:var(--sun);font-size:21px;font-weight:800;line-height:1.1}
+.wkl span{color:var(--mut);font-size:14px}
+.days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px}
+.day{display:flex;flex-direction:column;gap:7px;min-height:150px;padding:10px 10px 8px;border-radius:16px;background:var(--card)}
+.day.dom{background:var(--coral)}
+.day.out{background:transparent;border:1px dashed rgba(255,255,255,.25);min-height:0}
+.dtop{display:flex;flex-direction:column;align-items:center;gap:2px;padding-bottom:7px;border-bottom:1px solid rgba(255,255,255,.22);text-align:center}
+.num{font-weight:800;font-stretch:112%;font-size:34px;line-height:1}
+.wdn{font-size:14px;font-weight:600;color:var(--mut)}
+.day.dom .wdn{color:#FFF1EC}
+.day.out .num,.day.out .wdn{opacity:.4}
+.fer-tag{font-size:12.5px;line-height:1.3;color:#FFE7A3;text-align:center}
+.day.dom .fer-tag{color:#fff}
+.wslot{display:block;min-height:24px}
+.work{display:inline-flex;align-items:baseline;gap:6px}
+.work b{font-weight:800;font-size:26px;line-height:1;color:var(--sun)}
+.day.dom .work b{color:#FFF6D6}
+.work span{font-size:13px;font-weight:600}
+.pre{font-size:13px;line-height:1.3;color:var(--mut)}
+.day.dom .pre{color:#FFF1EC}
+.rows{display:flex;flex-direction:column;gap:5px}
+.nm{width:100%;min-height:34px;padding:5px 9px;border:1px solid transparent;border-radius:8px;background:rgba(255,255,255,.14);color:#fff;font:600 15px Archivo,sans-serif}
+.nm::placeholder{color:rgba(255,255,255,.62);font-weight:400}
+.nm:focus{outline:2px solid var(--sun);outline-offset:0;background:rgba(255,255,255,.22)}
+.nm.warn{border:1px dashed #FFE7A3}
+.add{align-self:flex-start;min-height:32px;padding:4px 6px;border:0;border-radius:6px;background:none;color:var(--mut);font:600 14px Archivo,sans-serif;cursor:pointer}
+.add:hover{color:#fff;background:rgba(255,255,255,.12)}
+.day.dom .add{color:#FFF1EC}
+.note{margin:14px 0 0;font-size:14px;color:var(--mut)}
+.summary{margin-top:28px;padding:24px 26px;border-radius:22px;background:#fff;color:#0E4A5A}
+.summary h2{margin:0 0 6px;font-weight:800;font-size:clamp(24px,3vw,30px);line-height:1.1}
+.sumnote{max-width:72ch;margin:0 0 14px;color:#3D6470;font-size:15px}
+.scroll{overflow-x:auto}
+table.sum{width:100%;min-width:680px;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.sum th,.sum td{padding:9px 10px;text-align:center;border-bottom:1px solid #D6E4E8}
+.sum thead th{border-bottom:2px solid #0E4A5A;font-weight:800;font-size:15px}
+.sum thead th.dom{color:#C2452A}
+.sum tbody th,.sum tfoot th{text-align:left;white-space:nowrap;font-weight:400}
+.sum tbody th b,.sum tfoot th b{display:block;font-weight:800;font-size:16px}
+.sum tbody th span{font-size:13px;color:#3D6470}
+.sum td{font-weight:700;font-size:17px;background:rgba(255,201,60,calc(.12 + var(--p,0) * .78))}
+.sum td.na{color:#7C98A0;font-weight:400;background:transparent}
+.sum td.t{background:transparent;font-weight:800;font-size:19px}
+.sum tfoot td,.sum tfoot th{border-bottom:0;background:transparent}
+.bar{position:sticky;bottom:0;z-index:5;display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px max(2.5vw,12px);background:var(--deep);border-top:1px solid rgba(255,255,255,.12)}
+#st{flex:1 1 240px;font-size:15px;color:var(--mut)}
+#st.dirty{color:#fff;font-weight:700}
+#cf{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:15px}
+#cf[hidden]{display:none}
+.btn{min-height:44px;padding:0 16px;border:1px solid rgba(255,255,255,.3);border-radius:10px;background:transparent;color:#fff;font:700 15px Archivo,sans-serif;cursor:pointer;white-space:nowrap}
+.btn.pri{background:var(--sun);border-color:var(--sun);color:var(--deep)}
+.btn.danger{background:var(--coral);border-color:var(--coral);color:#fff}
+.btn:disabled{opacity:.5;cursor:default}
+@media(max-width:900px){.band{grid-template-columns:minmax(0,1fr)}.wkl{flex-direction:row;align-items:baseline;gap:10px;padding:4px 6px}}
+@media(max-width:760px){
+ .days{grid-template-columns:minmax(0,1fr)}
+ .day{min-height:0}.day.out{display:none}
+ .dtop{flex-direction:row;justify-content:center;gap:10px;align-items:baseline}
+ .nm{min-height:44px;font-size:16px}.add{min-height:44px}
+ .tabs{width:100%}.tab{flex:1;min-height:44px}
+}
+@media print{.bar,.tabs,.add,.link{display:none}}
+</style></head><body class="manha"><div id="shell">
+<header class="wrap tophd">
+ <div class="ttlrow"><h1 id="ttl">Folgas da manhã</h1><span class="kick">Janeiro 2027</span></div>
+ <div class="tabs" role="tablist" aria-label="Turno"><button type="button" class="tab" role="tab" data-t="manha" aria-selected="true">Manhã</button><button type="button" class="tab" role="tab" data-t="tarde" aria-selected="false">Tarde</button></div>
+</header>
+<div class="wrap">
+ <div class="team"><b id="eqn">Equipe da manhã</b><span id="eql"></span><button type="button" class="link" id="eqbtn">Editar equipe</button></div>
+ <div class="eqedit" id="eqbox" hidden><label for="eqta" id="eqlab">Equipe do turno (um nome por linha)</label><textarea id="eqta"></textarea><p>A equipe é a base da conta: em cada dia, trabalham todos da equipe menos quem está de folga.</p><div class="eqbtns"><button type="button" class="btn pri" id="eqok">Aplicar equipe</button><button type="button" class="btn" id="eqno">Cancelar</button></div></div>
+</div>
+<main class="wrap"><div id="cal"></div>
+<p class="note">O número amarelo é quantos trabalham; os nomes são quem folga. Nome com borda tracejada não está na equipe e não entra na conta. Domingos em coral; 25/01 é feriado só na cidade de São Paulo.</p>
+<section class="summary" aria-labelledby="sumt"><h2 id="sumt">Quantas pessoas trabalham por semana</h2><p class="sumnote">Cada número é quantas pessoas da equipe trabalham no dia. O total da semana soma esses números (diárias trabalhadas) e a média divide pelo número de dias com escala.</p><div class="scroll" id="sum"></div></section>
+</main>
+<datalist id="nomes"></datalist>
+<div class="bar"><span id="st" role="status">Carregando…</span><span id="cf" hidden>Apagar todas as folgas do <b id="cft">turno</b>? <button type="button" class="btn danger" id="cfy">Apagar</button><button type="button" class="btn" id="cfn">Cancelar</button></span><button type="button" class="btn" id="clr">Limpar folgas</button><button type="button" class="btn" id="cp">Copiar escala</button><button type="button" class="btn" id="ex" hidden>Exportar arquivo</button><button type="button" class="btn" id="im" hidden>Importar arquivo</button><input type="file" id="imf" accept=".json,application/json" hidden><button type="button" class="btn" id="pdf" hidden>Baixar PDF (A4)</button><button type="button" class="btn pri" id="sv">Salvar escala</button></div>
+</div>
+<script type="application/json" id="state">{"rev": 6, "inicio": 4, "equipe": {"manha": ["Victória", "Patrícia", "Thalles", "Luiza", "Juan"], "tarde": ["Cida", "Deivid", "Bruna", "Ariane", "VAGA", "Beatriz", "Michely", "Clara", "Lucas", "Paula"]}, "manha": {}, "tarde": {}}</script>
+<script id="appjs">
+{
+const $=id=>document.getElementById(id);
+const SHELL=$('shell').outerHTML;
+const HEAD='<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Escala Janeiro 2027</title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..800&display=swap" rel="stylesheet">';
+const ANO=2027,MES=0,NDIAS=31;
+const FER={1:'Feriado nacional',25:'Aniv. de SP (feriado na capital)'};
+const FERS={1:'Feriado nacional',25:'Aniv. SP'};
+const WD=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+const WDH=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+const WDL=['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
+const ORD=[1,2,3,4,5,6,0];
+const TN={manha:'Turno da manhã',tarde:'Turno da tarde'};
+const TS={manha:'manhã',tarde:'tarde'};
+const LS='escala-jan2027-rascunho';
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const two=n=>String(n).padStart(2,'0');
+const norm=s=>String(s||'').trim().toLocaleLowerCase('pt-BR');
+const dec=n=>n.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1});
+function fixState(o){o=o||{};const e=o.equipe||{};return{rev:o.rev||0,inicio:o.inicio||1,equipe:{manha:e.manha||[],tarde:e.tarde||[]},manha:o.manha||{},tarde:o.tarde||{}}}
+let saved;try{saved=fixState(JSON.parse($('state').textContent))}catch(e){saved=fixState()}
+let st=JSON.parse(JSON.stringify(saved)),dirty=false,api=null,dl=null,busy=false,msg='';
+const HOSTED=!!(window.claude&&typeof window.claude.use==='function'),LSS='escala-jan2027-salva';
+if(HOSTED){try{const d=JSON.parse(localStorage.getItem(LS)||'null');if(d&&d.base===saved.rev&&d.data&&d.data.manha){st=fixState(d.data);st.rev=saved.rev;dirty=true}}catch(e){}}
+else{try{const d=JSON.parse(localStorage.getItem(LSS)||'null');if(d&&d.manha){st=fixState(d);st.rev=saved.rev}}catch(e){}}
+let tab=location.hash==='#tarde'?'tarde':'manha';
+
+function weeks(){
+ const first=(new Date(ANO,MES,1).getDay()+6)%7,prev=new Date(ANO,MES,0).getDate(),cells=[];
+ for(let i=0;i<first;i++)cells.push({d:prev-first+1+i,out:1,m:12,wd:(i+1)%7});
+ for(let d=1;d<=NDIAS;d++)cells.push({d,wd:new Date(ANO,MES,d).getDay(),m:MES+1});
+ let k=1;while(cells.length%7)cells.push({d:k++,out:1,m:MES+2,wd:(cells.length%7+1)%7});
+ const w=[];for(let i=0;i<cells.length;i+=7)w.push(cells.slice(i,i+7));return w;
+}
+const fmt=c=>two(c.d)+'/'+two(c.m);
+const names=L=>(L||[]).map(p=>(p.nome||'').trim()).filter(Boolean);
+function working(s,k,d){const team=s.equipe[k];if(d<s.inicio||!team.length)return null;const off=new Set(names(s[k][d]).map(norm));return team.filter(n=>!off.has(norm(n))).length}
+function weekStats(s,k,week){const v=week.map(c=>c.out?null:working(s,k,c.d)),real=v.filter(x=>x!==null),tot=real.reduce((a,b)=>a+b,0);return{v,tot,days:real.length,avg:real.length?tot/real.length:null}}
+
+function workHTML(d){
+ const w=working(st,tab,d);
+ if(w!==null)return `<span class="work"><b>${w}</b><span>trabalham</span></span>`;
+ if(d<st.inicio)return `<span class="pre">Antes do início da escala</span>`;
+ return '';
+}
+function dayHTML(c){
+ if(c.out)return `<div class="day out" aria-hidden="true"><div class="dtop"><span class="num">${c.d}</span><span class="wdn">${WDL[c.wd]}</span></div></div>`;
+ const L=st[tab][c.d]||[],n=Math.max(1,L.length),tset=new Set(st.equipe[tab].map(norm));
+ let rows='';
+ for(let i=0;i<n;i++){const v=(L[i]||{}).nome||'',warn=v.trim()&&tset.size&&!tset.has(norm(v));rows+=`<input class="nm${warn?' warn':''}" data-d="${c.d}" data-i="${i}" value="${esc(v)}" placeholder="Quem folga" list="nomes" autocomplete="off" aria-label="Folga ${i+1}, ${WDL[c.wd]} ${c.d} de janeiro"${warn?' title="Nome fora da equipe"':''}>`}
+ const cls='day'+(c.wd===0?' dom':'')+(FER[c.d]?' fer':'');
+ return `<div class="${cls}" id="d${c.d}"><div class="dtop"><span class="num">${c.d}</span><span class="wdn">${WDL[c.wd]}</span></div>${FER[c.d]?`<div class="fer-tag">${FER[c.d]}</div>`:''}<span class="wslot">${workHTML(c.d)}</span><div class="rows">${rows}</div><button type="button" class="add" data-d="${c.d}">+ folga</button></div>`;
+}
+function render(){
+ document.body.className=tab;
+ for(const b of document.querySelectorAll('.tab'))b.setAttribute('aria-selected',String(b.dataset.t===tab));
+ $('ttl').textContent='Folgas da '+TS[tab];
+ $('cft').textContent='turno da '+TS[tab];
+ $('cal').innerHTML=weeks().map((wk,i)=>`<section class="band" aria-label="Semana ${i+1}"><div class="wkl"><b>Semana ${i+1}</b><span>${fmt(wk[0])} a ${fmt(wk[6])}</span></div><div class="days">${wk.map(dayHTML).join('')}</div></section>`).join('');
+ team();summary();datalist();status();
+}
+function team(){
+ const t=st.equipe[tab];
+ $('eqn').textContent=`Equipe da ${TS[tab]}: ${t.length} ${t.length===1?'pessoa':'pessoas'}`;
+ $('eql').textContent=t.length?t.join(', '):'Cadastre a equipe para ver quantos trabalham em cada dia.';
+ $('eqlab').textContent=`Equipe da ${TS[tab]} (um nome por linha)`;
+}
+function summary(){
+ const W=weeks(),size=st.equipe[tab].length;let mt=0;
+ let h=`<table class="sum"><thead><tr><th scope="col">Semana</th>${ORD.map(i=>`<th scope="col"${i===0?' class="dom"':''}>${WD[i]}</th>`).join('')}<th scope="col">Total na semana</th><th scope="col">Média por dia</th></tr></thead><tbody>`;
+ W.forEach((wk,i)=>{const s=weekStats(st,tab,wk);mt+=s.tot;
+  h+=`<tr><th scope="row"><b>Semana ${i+1}</b><span>${fmt(wk[0])} a ${fmt(wk[6])}</span></th>`+s.v.map(x=>x===null?'<td class="na">–</td>':`<td style="--p:${size?(x/size).toFixed(2):0}">${x}</td>`).join('')+`<td class="t">${s.days?s.tot:'–'}</td><td class="t">${s.avg===null?'–':dec(s.avg)}</td></tr>`});
+ h+=`</tbody><tfoot><tr><th scope="row"><b>Janeiro</b></th><td colspan="7"></td><td class="t">${mt}</td><td></td></tr></tfoot></table>`;
+ $('sum').innerHTML=h;
+}
+function datalist(){
+ const s=new Map();for(const n of st.equipe[tab])s.set(norm(n),n);
+ for(const L of Object.values(st[tab]))for(const n of names(L))if(!s.has(norm(n)))s.set(norm(n),n);
+ $('nomes').innerHTML=[...s.values()].map(n=>`<option value="${esc(n)}">`).join('');
+}
+function refreshDay(d){
+ const el=$('d'+d);if(!el)return;
+ el.querySelector('.wslot').innerHTML=workHTML(+d);
+ const tset=new Set(st.equipe[tab].map(norm));
+ for(const i of el.querySelectorAll('.nm')){const w=i.value.trim()&&tset.size&&!tset.has(norm(i.value));i.classList.toggle('warn',!!w);i.title=w?'Nome fora da equipe':''}
+}
+function status(){
+ const el=$('st');el.classList.toggle('dirty',dirty&&!busy&&!msg);
+ el.textContent=msg||(busy?'Salvando…':dirty?'Alterações não salvas. Clique em “Salvar escala”.':HOSTED?'Tudo salvo.':'Salvo automaticamente neste navegador.');
+ $('sv').disabled=busy;
+}
+function draft(){try{if(HOSTED)localStorage.setItem(LS,JSON.stringify({base:saved.rev,data:st}));else localStorage.setItem(LSS,JSON.stringify(clean(st)))}catch(e){}}
+function mark(){dirty=HOSTED;msg='';draft();status()}
+function clean(s){
+ const o={inicio:s.inicio,equipe:{manha:s.equipe.manha.map(n=>n.trim()).filter(Boolean),tarde:s.equipe.tarde.map(n=>n.trim()).filter(Boolean)}};
+ for(const k of ['manha','tarde']){o[k]={};for(const [d,L] of Object.entries(s[k])){const C=names(L).map(nome=>({nome}));if(C.length)o[k][d]=C}}
+ return o;
+}
+function buildDoc(s){
+ const json=JSON.stringify(s).replace(/</g,'\\u003c');
+ return '<!DOCTYPE html>\n<html lang="pt-BR"><head>'+HEAD+'<style id="css">'+$('css').textContent+'</style></head><body class="manha">'+SHELL+'\n<script type="application/json" id="state">'+json+'<\/script>\n<script id="appjs">'+$('appjs').textContent+'<\/script></body></html>';
+}
+async function save(){
+ if(busy)return;
+ const next=clean(st);next.rev=saved.rev+1;
+ if(!api){st=fixState(next);st.rev=saved.rev;draft();dirty=false;msg=HOSTED?'Salvo só neste navegador; o salvamento compartilhado não está disponível nesta visualização.':'Escala salva neste navegador. Para levar a outro computador, use “Exportar arquivo”.';render();return}
+ busy=true;msg='';status();
+ try{localStorage.removeItem(LS)}catch(e){}
+ try{await api.publish(buildDoc(next));dirty=false;msg='Escala salva.'}
+ catch(err){draft();const m=String((err&&(err.code||err.message))||err);
+  msg=/conflict/i.test(m)?'Outra pessoa salvou ao mesmo tempo; a página vai recarregar com a versão dela.':/not_granted|not_writer/i.test(m)?'Você tem acesso só de leitura a esta escala.':'Não foi possível salvar agora. O rascunho continua neste navegador; tente de novo.'}
+ busy=false;status();
+}
+function asText(){
+ const out=[];
+ for(const k of ['manha','tarde']){
+  out.push(TN[k].toUpperCase()+' – FOLGAS DE JANEIRO 2027');
+  for(let d=1;d<=NDIAS;d++){const L=names(st[k][d]),w=working(st,k,d);if(!L.length&&w===null)continue;
+   out.push(`${WD[new Date(ANO,MES,d).getDay()]} ${two(d)}/01: ${L.length?'folga '+L.join(', '):'sem folgas'}${w===null?'':` (trabalham ${w})`}`)}
+  out.push('');
+ }
+ return out.join('\n');
+}
+/*PDF-START*/
+function loadPDF(){return window.jspdf?Promise.resolve(window.jspdf):new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';s.onload=()=>res(window.jspdf);s.onerror=rej;document.head.appendChild(s)})}
+function fitText(doc,t,w){if(doc.getTextWidth(t)<=w)return t;while(t.length>1&&doc.getTextWidth(t+'…')>w)t=t.slice(0,-1);return t+'…'}
+function drawPDF(jsPDF){
+ const doc=new jsPDF({orientation:'landscape',unit:'mm',format:'a4'});
+ const W=297,H=210,M=6,wk=weeks(),S=clean(st);S.equipe=st.equipe;
+ const BG=[14,74,90],BAND=[18,90,108],CARD=[26,113,134],SUN=[255,201,60],CORAL=[231,111,81],MUT=[207,230,236],WHITE=[255,255,255],TEAL=[14,74,90],GREY=[61,100,112],LINEC=[214,228,232],ROSE=[255,241,236];
+ const mix=(a,b,p)=>a.map((v,i)=>Math.round(v+(b[i]-v)*p));
+ const HEADH=11,SUMH=29,GAP=1.6,bandsTop=M+HEADH,bandsH=H-M-SUMH-GAP-bandsTop;
+ const wt=wk.map(week=>week.some(c=>!c.out&&c.d>=S.inicio)?1:0.6),wsum=wt.reduce((a,b)=>a+b,0),unit=(bandsH-GAP*(wk.length-1))/wsum;
+ const LBLW=19,cg=1.4,innerX=M+LBLW,cardW=(W-M-1.2-innerX-cg*6)/7;
+ ['manha','tarde'].forEach((k,pi)=>{
+  if(pi)doc.addPage();
+  const size=S.equipe[k].length;
+  doc.setFillColor(...BG);doc.rect(0,0,W,H,'F');
+  doc.setFont('helvetica','bold');doc.setFontSize(16);doc.setTextColor(...WHITE);doc.text('Folgas da '+TS[k],M+1,M+7.2);
+  const tw=doc.getTextWidth('Folgas da '+TS[k]);doc.setFontSize(10);doc.setTextColor(...SUN);doc.text('Janeiro 2027',M+4+tw,M+7.2);
+  doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(...MUT);
+  doc.text(fitText(doc,`Equipe: ${size} pessoas (${S.equipe[k].join(', ')})`,150),W-M-1,M+3.8,{align:'right'});
+  doc.text('Número amarelo: quantos trabalham. Nomes: quem folga.',W-M-1,M+8,{align:'right'});
+  let y=bandsTop;
+  wk.forEach((week,i)=>{
+   const bh=unit*wt[i];
+   doc.setFillColor(...BAND);doc.roundedRect(M,y,W-2*M,bh,2.5,2.5,'F');
+   doc.setFont('helvetica','bold');doc.setFontSize(8.5);doc.setTextColor(...SUN);doc.text('Semana '+(i+1),M+2,y+bh/2-1.5);
+   doc.setFont('helvetica','normal');doc.setFontSize(6.5);doc.setTextColor(...MUT);doc.text(fmt(week[0])+' a',M+2,y+bh/2+1.8);doc.text(fmt(week[6]),M+2,y+bh/2+4.6);
+   week.forEach((cl,j)=>{
+    const x=innerX+j*(cardW+cg),cy=y+1.2,ch=bh-2.4,cx=x+cardW/2,dom=cl.wd===0,cc=dom?CORAL:CARD;
+    if(cl.out){doc.setDrawColor(...mix(BAND,WHITE,0.25));doc.setLineWidth(0.2);doc.setLineDashPattern([0.8,0.8],0);doc.roundedRect(x,cy,cardW,ch,2,2,'S');doc.setLineDashPattern([],0);doc.setTextColor(...mix(BAND,WHITE,0.4));doc.setFont('helvetica','bold');doc.setFontSize(14);doc.text(String(cl.d),cx,cy+5.8,{align:'center'});doc.setFont('helvetica','normal');doc.setFontSize(6.5);doc.text(WDL[cl.wd],cx,cy+8.8,{align:'center'});return}
+    doc.setFillColor(...cc);doc.roundedRect(x,cy,cardW,ch,2,2,'F');
+    doc.setTextColor(...WHITE);doc.setFont('helvetica','bold');doc.setFontSize(14);doc.text(String(cl.d),cx,cy+5.8,{align:'center'});
+    doc.setFont('helvetica','normal');doc.setFontSize(6.5);doc.setTextColor(...(dom?ROSE:MUT));doc.text(WDL[cl.wd],cx,cy+8.8,{align:'center'});
+    doc.setDrawColor(...mix(cc,WHITE,0.3));doc.setLineWidth(0.2);doc.line(x+1.5,cy+10,x+cardW-1.5,cy+10);
+    const w=working(S,k,cl.d),ly=cy+14.1;
+    if(w!==null){doc.setFont('helvetica','bold');doc.setFontSize(11);doc.setTextColor(...(dom?[255,246,214]:SUN));doc.text(String(w),x+1.7,ly);const nw=doc.getTextWidth(String(w));doc.setFontSize(7);doc.setTextColor(...WHITE);doc.text('trabalham',x+2.6+nw,ly)}
+    else if(cl.d<S.inicio){doc.setFont('helvetica','normal');doc.setFontSize(6.5);doc.setTextColor(...(dom?ROSE:MUT));doc.text('Antes da escala',x+1.7,ly)}
+    if(FERS[cl.d]){doc.setFont('helvetica','bold');doc.setFontSize(5.4);doc.setTextColor(255,231,163);doc.text(FERS[cl.d],x+cardW-1.4,ly,{align:'right'})}
+    const L=S[k][cl.d]||[],yE=cy+15.6,bottom=cy+ch-0.8;
+    if(!L.length){doc.setDrawColor(...mix(cc,WHITE,0.3));for(let yy=yE+4.6;yy<bottom;yy+=4.8)doc.line(x+1.8,yy,x+cardW-1.8,yy);return}
+    const avail=bottom-yE,cols=L.length*4.6>avail?2:1,nr=Math.ceil(L.length/cols);let lh=4.6;if(nr*lh>avail)lh=avail/nr;
+    const fs=Math.max(5,Math.min(cols>1?8.5:10,lh/0.42)),cw=(cardW-3)/cols;
+    doc.setFont('helvetica','bold');doc.setFontSize(fs);doc.setTextColor(...WHITE);
+    L.forEach((p,n)=>{const ci=Math.floor(n/nr),by=yE+(n%nr)*lh+lh*0.8;doc.setFillColor(...(dom?[255,246,214]:SUN));doc.circle(x+2.4+ci*cw,by-fs*0.12,0.6,'F');doc.text(fitText(doc,p.nome,cw-3.4),x+3.8+ci*cw,by)});
+   });
+   y+=bh+GAP;
+  });
+  // resumo semanal compacto
+  const sy=H-M-SUMH;
+  doc.setFillColor(...WHITE);doc.roundedRect(M,sy,W-2*M,SUMH,2.5,2.5,'F');
+  const cW=[40,...Array(7).fill(25),30,26],x0=M+4,cx=[x0];cW.forEach((v,i)=>cx.push(cx[i]+v));
+  let mt=0;const rows=wk.map(week=>{const s=weekStats(S,k,week);mt+=s.tot;return s});
+  doc.setTextColor(...TEAL);doc.setFont('helvetica','bold');doc.setFontSize(9.5);doc.text('Quantas pessoas trabalham por semana',x0+1,sy+5.2);
+  doc.setFontSize(8);doc.text('Total de janeiro: '+mt,cx[10],sy+5.2,{align:'right'});
+  const hy=sy+6.6,hh=4,rh=3.5;
+  doc.setFontSize(7);
+  ['Semana',...ORD.map(i=>WD[i]),'Total na semana','Média por dia'].forEach((t,i)=>{doc.setTextColor(...(i===7?[194,69,42]:TEAL));doc.text(t,i?cx[i]+cW[i]/2:cx[i]+1,hy+2.9,i?{align:'center'}:{})});
+  doc.setDrawColor(...TEAL);doc.setLineWidth(0.35);doc.line(x0,hy+hh,cx[10],hy+hh);doc.setLineWidth(0.2);
+  wk.forEach((week,r)=>{
+   const yy=hy+hh+r*rh,s=rows[r];
+   doc.setFont('helvetica','bold');doc.setFontSize(7);doc.setTextColor(...TEAL);doc.text('Semana '+(r+1),x0+1,yy+2.6);
+   doc.setFont('helvetica','normal');doc.setFontSize(6);doc.setTextColor(...GREY);doc.text(fmt(week[0])+' a '+fmt(week[6]),x0+15,yy+2.6);
+   s.v.forEach((v,j)=>{const xx=cx[j+1];
+    if(v===null){doc.setTextColor(124,152,160);doc.setFont('helvetica','normal');doc.setFontSize(7);doc.text('–',xx+cW[j+1]/2,yy+2.6,{align:'center'});return}
+    doc.setFillColor(...mix(WHITE,SUN,size?0.12+0.78*v/size:0));doc.rect(xx,yy+0.15,cW[j+1],rh-0.3,'F');
+    doc.setTextColor(...TEAL);doc.setFont('helvetica','bold');doc.setFontSize(7.5);doc.text(String(v),xx+cW[j+1]/2,yy+2.6,{align:'center'})});
+   doc.setTextColor(...TEAL);doc.setFont('helvetica','bold');doc.setFontSize(8);
+   doc.text(s.days?String(s.tot):'–',cx[8]+cW[8]/2,yy+2.6,{align:'center'});doc.setFontSize(7.5);doc.text(s.avg===null?'–':dec(s.avg),cx[9]+cW[9]/2,yy+2.6,{align:'center'});
+   if(r<wk.length-1){doc.setDrawColor(...LINEC);doc.line(x0,yy+rh,cx[10],yy+rh)}
+  });
+ });
+ return doc.output('arraybuffer');
+}
+/*PDF-END*/
+
+$('cal').addEventListener('input',e=>{
+ const t=e.target;if(!t.classList.contains('nm'))return;
+ const d=t.dataset.d,i=+t.dataset.i,L=st[tab][d]||(st[tab][d]=[]);
+ while(L.length<=i)L.push({nome:''});
+ L[i].nome=t.value;mark();refreshDay(d);summary();
+});
+$('cal').addEventListener('change',datalist);
+$('cal').addEventListener('click',e=>{
+ const b=e.target.closest('.add');if(!b)return;
+ const d=b.dataset.d,L=st[tab][d]||(st[tab][d]=[]),shown=b.parentElement.querySelectorAll('.nm').length;
+ while(L.length<shown+1)L.push({nome:''});
+ mark();render();
+ const ins=document.querySelectorAll('#d'+d+' .nm');ins[ins.length-1].focus();
+});
+for(const b of document.querySelectorAll('.tab'))b.addEventListener('click',()=>{tab=b.dataset.t;location.hash=tab;$('eqbox').hidden=true;render()});
+window.addEventListener('hashchange',()=>{const t=location.hash==='#tarde'?'tarde':'manha';if(t!==tab){tab=t;render()}});
+$('eqbtn').addEventListener('click',()=>{$('eqta').value=st.equipe[tab].join('\n');$('eqbox').hidden=false;$('eqta').focus()});
+$('eqno').addEventListener('click',()=>{$('eqbox').hidden=true});
+$('eqok').addEventListener('click',()=>{st.equipe[tab]=$('eqta').value.split('\n').map(s=>s.trim()).filter(Boolean);$('eqbox').hidden=true;mark();render()});
+$('sv').addEventListener('click',save);
+$('clr').addEventListener('click',()=>{$('cf').hidden=false;$('clr').hidden=true});
+$('cfn').addEventListener('click',()=>{$('cf').hidden=true;$('clr').hidden=false});
+$('cfy').addEventListener('click',()=>{st[tab]={};$('cf').hidden=true;$('clr').hidden=false;mark();render()});
+$('cp').addEventListener('click',async()=>{
+ try{await navigator.clipboard.writeText(asText());msg='Escala copiada como texto. Cole no SeaTalk, e-mail ou planilha.'}
+ catch(e){msg='O navegador bloqueou a cópia nesta visualização.'}
+ status();setTimeout(()=>{msg='';status()},4000);
+});
+function fileOut(name,data,type){if(dl)return dl.save({filename:name,data});const u=URL.createObjectURL(new Blob([data],{type}));const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),8000);return Promise.resolve()}
+$('ex').addEventListener('click',async()=>{try{await fileOut('escala-janeiro-2027.json',JSON.stringify(clean(st),null,1),'application/json');msg='Arquivo exportado. No outro computador, abra este link e use “Importar arquivo”.'}catch(e){msg='Não foi possível exportar agora.'}status();setTimeout(()=>{msg='';status()},6000)});
+$('im').addEventListener('click',()=>$('imf').click());
+$('imf').addEventListener('change',async()=>{const f=$('imf').files[0];$('imf').value='';if(!f)return;try{const o=JSON.parse(await f.text());if(!o||typeof o.manha!=='object'||typeof o.tarde!=='object')throw 0;st=fixState(o);st.rev=saved.rev;mark();render();msg='Escala importada do arquivo.'}catch(e){msg='Esse arquivo não é uma escala exportada por esta página.'}status();setTimeout(()=>{msg='';status()},6000)});
+$('pdf').addEventListener('click',async()=>{
+ if(!dl&&HOSTED)return;msg='Gerando o PDF…';status();
+ try{const {jsPDF}=await loadPDF();await fileOut('folgas-janeiro-2027.pdf',drawPDF(jsPDF),'application/pdf');msg='PDF pronto: A4 deitado, página 1 manhã e página 2 tarde.'}
+ catch(e){const c=e&&e.code;msg=c==='declined'?'Download cancelado.':c==='rate_limited'?'Já há um download aberto; tente de novo em instantes.':c?'O download não está disponível nesta visualização.':'Não foi possível gerar o PDF agora.'}
+ status();setTimeout(()=>{msg='';status()},6000);
+});
+render();
+if(!HOSTED){for(const id of ['pdf','ex','im'])$(id).hidden=false}
+if(window.claude&&typeof claude.use==='function'){
+ claude.use('artifact').then(a=>{api=a;status()}).catch(()=>{});
+ claude.use('downloads').then(d=>{dl=d;$('pdf').hidden=!d}).catch(()=>{});
+}
+}
+</script></body></html>
