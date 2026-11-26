@@ -40,13 +40,13 @@ main{padding-block:4px 28px}
 .day.dom{background:var(--coral)}
 .day.out{background:transparent;border:1px dashed rgba(255,255,255,.25);min-height:0}
 .dtop{display:flex;flex-direction:column;align-items:center;gap:2px;padding-bottom:7px;border-bottom:1px solid rgba(255,255,255,.22);text-align:center}
-.num{font-weight:800;font-stretch:112%;font-size:34px;line-height:1}
+.num{font-weight:800;font-stretch:112%;font-size:38px;line-height:1}
 .wdn{font-size:14px;font-weight:600;color:var(--mut)}
 .day.dom .wdn{color:#FFF1EC}
 .day.out .num,.day.out .wdn{opacity:.4}
 .fer-tag{font-size:12.5px;line-height:1.3;color:#FFE7A3;text-align:center}
 .day.dom .fer-tag{color:#fff}
-.wslot{display:block;min-height:24px}
+.wslot{display:block;min-height:24px;margin-top:auto;padding-top:7px;border-top:1px solid rgba(255,255,255,.25)}
 .work{display:inline-flex;align-items:baseline;gap:6px}
 .work b{font-weight:800;font-size:26px;line-height:1;color:var(--sun)}
 .day.dom .work b{color:#FFF6D6}
@@ -163,7 +163,7 @@ function dayHTML(c){
  let rows='';
  for(let i=0;i<n;i++){const v=(L[i]||{}).nome||'',warn=v.trim()&&tset.size&&!tset.has(norm(v));rows+=`<input class="nm${warn?' warn':''}" data-d="${c.d}" data-i="${i}" value="${esc(v)}" placeholder="Quem folga" list="nomes" autocomplete="off" aria-label="Folga ${i+1}, ${WDL[c.wd]} ${c.d} de janeiro"${warn?' title="Nome fora da equipe"':''}>`}
  const cls='day'+(c.wd===0?' dom':'')+(FER[c.d]?' fer':'');
- return `<div class="${cls}" id="d${c.d}"><div class="dtop"><span class="num">${c.d}</span><span class="wdn">${WDL[c.wd]}</span></div>${FER[c.d]?`<div class="fer-tag">${FER[c.d]}</div>`:''}<span class="wslot">${workHTML(c.d)}</span><div class="rows">${rows}</div><button type="button" class="add" data-d="${c.d}">+ folga</button></div>`;
+ return `<div class="${cls}" id="d${c.d}"><div class="dtop"><span class="num">${c.d}</span><span class="wdn">${WDL[c.wd]}</span></div>${FER[c.d]?`<div class="fer-tag">${FER[c.d]}</div>`:''}<div class="rows">${rows}</div><button type="button" class="add" data-d="${c.d}">+ folga</button><span class="wslot">${workHTML(c.d)}</span></div>`;
 }
 function render(){
  document.body.className=tab;
@@ -244,7 +244,7 @@ function drawPDF(jsPDF){
  const BG=[14,74,90],BAND=[18,90,108],CARD=[26,113,134],SUN=[255,201,60],CORAL=[231,111,81],MUT=[207,230,236],WHITE=[255,255,255],TEAL=[14,74,90],GREY=[61,100,112],LINEC=[214,228,232],ROSE=[255,241,236];
  const mix=(a,b,p)=>a.map((v,i)=>Math.round(v+(b[i]-v)*p));
  const HEADH=11,SUMH=29,GAP=1.6,bandsTop=M+HEADH,bandsH=H-M-SUMH-GAP-bandsTop;
- const wt=wk.map(week=>week.some(c=>!c.out&&c.d>=S.inicio)?1:0.6),wsum=wt.reduce((a,b)=>a+b,0),unit=(bandsH-GAP*(wk.length-1))/wsum;
+ const wt=wk.map(week=>week.some(c=>!c.out&&c.d>=S.inicio)?1:0.75),wsum=wt.reduce((a,b)=>a+b,0),unit=(bandsH-GAP*(wk.length-1))/wsum;
  const LBLW=19,cg=1.4,innerX=M+LBLW,cardW=(W-M-1.2-innerX-cg*6)/7;
  ['manha','tarde'].forEach((k,pi)=>{
   if(pi)doc.addPage();
@@ -263,21 +263,24 @@ function drawPDF(jsPDF){
    doc.setFont('helvetica','normal');doc.setFontSize(6.5);doc.setTextColor(...MUT);doc.text(fmt(week[0])+' a',M+2,y+bh/2+1.8);doc.text(fmt(week[6]),M+2,y+bh/2+4.6);
    week.forEach((cl,j)=>{
     const x=innerX+j*(cardW+cg),cy=y+1.2,ch=bh-2.4,cx=x+cardW/2,dom=cl.wd===0,cc=dom?CORAL:CARD;
-    if(cl.out){doc.setDrawColor(...mix(BAND,WHITE,0.25));doc.setLineWidth(0.2);doc.setLineDashPattern([0.8,0.8],0);doc.roundedRect(x,cy,cardW,ch,2,2,'S');doc.setLineDashPattern([],0);doc.setTextColor(...mix(BAND,WHITE,0.4));doc.setFont('helvetica','bold');doc.setFontSize(14);doc.text(String(cl.d),cx,cy+5.8,{align:'center'});doc.setFont('helvetica','normal');doc.setFontSize(6.5);doc.text(WDL[cl.wd],cx,cy+8.8,{align:'center'});return}
+    if(cl.out){doc.setDrawColor(...mix(BAND,WHITE,0.25));doc.setLineWidth(0.2);doc.setLineDashPattern([0.8,0.8],0);doc.roundedRect(x,cy,cardW,ch,2,2,'S');doc.setLineDashPattern([],0);doc.setTextColor(...mix(BAND,WHITE,0.4));doc.setFont('helvetica','bold');doc.setFontSize(21);doc.text(String(cl.d),cx,cy+7.9,{align:'center'});doc.setFont('helvetica','normal');doc.setFontSize(7.2);doc.text(WDL[cl.wd],cx,cy+11.3,{align:'center'});return}
     doc.setFillColor(...cc);doc.roundedRect(x,cy,cardW,ch,2,2,'F');
-    doc.setTextColor(...WHITE);doc.setFont('helvetica','bold');doc.setFontSize(14);doc.text(String(cl.d),cx,cy+5.8,{align:'center'});
-    doc.setFont('helvetica','normal');doc.setFontSize(6.5);doc.setTextColor(...(dom?ROSE:MUT));doc.text(WDL[cl.wd],cx,cy+8.8,{align:'center'});
-    doc.setDrawColor(...mix(cc,WHITE,0.3));doc.setLineWidth(0.2);doc.line(x+1.5,cy+10,x+cardW-1.5,cy+10);
-    const w=working(S,k,cl.d),ly=cy+14.1;
-    if(w!==null){doc.setFont('helvetica','bold');doc.setFontSize(11);doc.setTextColor(...(dom?[255,246,214]:SUN));doc.text(String(w),x+1.7,ly);const nw=doc.getTextWidth(String(w));doc.setFontSize(7);doc.setTextColor(...WHITE);doc.text('trabalham',x+2.6+nw,ly)}
-    else if(cl.d<S.inicio){doc.setFont('helvetica','normal');doc.setFontSize(6.5);doc.setTextColor(...(dom?ROSE:MUT));doc.text('Antes da escala',x+1.7,ly)}
-    if(FERS[cl.d]){doc.setFont('helvetica','bold');doc.setFontSize(5.4);doc.setTextColor(255,231,163);doc.text(FERS[cl.d],x+cardW-1.4,ly,{align:'right'})}
-    const L=S[k][cl.d]||[],yE=cy+15.6,bottom=cy+ch-0.8;
-    if(!L.length){doc.setDrawColor(...mix(cc,WHITE,0.3));for(let yy=yE+4.6;yy<bottom;yy+=4.8)doc.line(x+1.8,yy,x+cardW-1.8,yy);return}
-    const avail=bottom-yE,cols=L.length*4.6>avail?2:1,nr=Math.ceil(L.length/cols);let lh=4.6;if(nr*lh>avail)lh=avail/nr;
-    const fs=Math.max(5,Math.min(cols>1?8.5:10,lh/0.42)),cw=(cardW-3)/cols;
+    const sub=dom?ROSE:MUT,lc=mix(cc,WHITE,0.32);
+    doc.setTextColor(...WHITE);doc.setFont('helvetica','bold');doc.setFontSize(21);doc.text(String(cl.d),cx,cy+7.9,{align:'center'});
+    doc.setFont('helvetica','normal');doc.setFontSize(7.2);doc.setTextColor(...sub);doc.text(WDL[cl.wd],cx,cy+11.3,{align:'center'});
+    doc.setDrawColor(...lc);doc.setLineWidth(0.25);doc.line(x+1.5,cy+12.7,x+cardW-1.5,cy+12.7);
+    const w=working(S,k,cl.d),fy=cy+ch-1.9,sepY=cy+ch-6;
+    doc.setDrawColor(...lc);doc.line(x+1.5,sepY,x+cardW-1.5,sepY);
+    if(w!==null){doc.setFont('helvetica','bold');doc.setFontSize(11);doc.setTextColor(...(dom?[255,246,214]:SUN));doc.text(String(w),x+1.8,fy);const nw=doc.getTextWidth(String(w));doc.setFontSize(7.5);doc.setTextColor(...WHITE);doc.text('trabalham',x+2.8+nw,fy)}
+    else if(cl.d<S.inicio){doc.setFont('helvetica','normal');doc.setFontSize(6.3);doc.setTextColor(...sub);doc.text('Antes da escala',x+1.8,fy)}
+    if(FERS[cl.d]){doc.setFont('helvetica','bold');doc.setFontSize(5.3);doc.setTextColor(255,231,163);doc.text(FERS[cl.d],x+cardW-1.4,fy,{align:'right'})}
+    const L=S[k][cl.d]||[],yE=cy+13.6,bottom=sepY-0.8;
+    if(bottom-yE<2)return;
+    if(!L.length){doc.setDrawColor(...mix(cc,WHITE,0.22));for(let yy=yE+4.6;yy<bottom-1.6;yy+=4.8)doc.line(x+1.8,yy,x+cardW-1.8,yy);return}
+    const avail=bottom-yE,cols=L.length*3.9>avail?2:1,nr=Math.ceil(L.length/cols);let lh=Math.min(4.8,avail/nr);
+    const fs=Math.max(5,Math.min(cols>1?9:10.5,lh/0.42)),cw=(cardW-3)/cols;
     doc.setFont('helvetica','bold');doc.setFontSize(fs);doc.setTextColor(...WHITE);
-    L.forEach((p,n)=>{const ci=Math.floor(n/nr),by=yE+(n%nr)*lh+lh*0.8;doc.setFillColor(...(dom?[255,246,214]:SUN));doc.circle(x+2.4+ci*cw,by-fs*0.12,0.6,'F');doc.text(fitText(doc,p.nome,cw-3.4),x+3.8+ci*cw,by)});
+    L.forEach((p,n)=>{const ci=Math.floor(n/nr),by=yE+(n%nr)*lh+lh*0.8;doc.setFillColor(...(dom?[255,246,214]:SUN));doc.circle(x+2.4+ci*cw,by-fs*0.12,0.65,'F');doc.text(fitText(doc,p.nome,cw-3.4),x+3.9+ci*cw,by)});
    });
    y+=bh+GAP;
   });
