@@ -16,6 +16,12 @@ h1{margin:0;font-weight:800;font-stretch:112%;font-size:clamp(28px,3.2vw,36px);l
 .side{display:flex;flex-direction:column;align-items:flex-end;gap:12px;max-width:440px}
 .lead{margin:0;color:var(--mut);font-size:16px;text-align:right}
 .tabs{display:flex;gap:4px;padding:4px;border-radius:999px;background:var(--deep)}
+.ctrls{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.mnav{display:flex;align-items:center;gap:6px}
+.mbtn{min-width:40px;min-height:40px;border:0;border-radius:999px;background:var(--deep);color:#fff;font:700 22px/1 Archivo,sans-serif;cursor:pointer}
+.mbtn:disabled{opacity:.35;cursor:default}
+#msel{min-height:40px;padding:0 14px;border:0;border-radius:999px;background:var(--deep);color:#fff;font:700 15px Archivo,sans-serif;cursor:pointer}
+.mbtn:focus-visible,#msel:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
 .tab{min-height:40px;padding:0 22px;border:0;border-radius:999px;background:transparent;color:var(--ink);font:700 16px Archivo,sans-serif;cursor:pointer}
 .tab[aria-selected=true]{background:var(--sun);color:var(--deep)}
 .tab:focus-visible,.btn:focus-visible,.add:focus-visible,.link:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
@@ -79,11 +85,11 @@ table.sum{width:100%;min-width:680px;border-collapse:collapse;font-variant-numer
 .sum td.t{background:transparent;font-weight:800;font-size:19px}
 .sum tfoot td,.sum tfoot th{border-bottom:0;background:transparent}
 .bar{position:sticky;bottom:0;z-index:5;display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px max(2.5vw,12px);background:var(--deep);border-top:1px solid rgba(255,255,255,.12)}
-#st{flex:1 1 240px;font-size:15px;color:var(--mut)}
+#st{flex:1 1 170px;font-size:14px;color:var(--mut)}
 #st.dirty{color:#fff;font-weight:700}
 #cf{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:15px}
 #cf[hidden]{display:none}
-.btn{min-height:44px;padding:0 16px;border:1px solid rgba(255,255,255,.3);border-radius:10px;background:transparent;color:#fff;font:700 15px Archivo,sans-serif;cursor:pointer;white-space:nowrap}
+.btn{min-height:44px;padding:0 13px;border:1px solid rgba(255,255,255,.3);border-radius:10px;background:transparent;color:#fff;font:700 15px Archivo,sans-serif;cursor:pointer;white-space:nowrap}
 .btn.pri{background:var(--sun);border-color:var(--sun);color:var(--deep)}
 .btn.danger{background:var(--coral);border-color:var(--coral);color:#fff}
 .btn:disabled{opacity:.5;cursor:default}
@@ -91,85 +97,93 @@ table.sum{width:100%;min-width:680px;border-collapse:collapse;font-variant-numer
  .days{grid-template-columns:minmax(0,1fr)}
  .day{min-height:0}.day.out{display:none}
  .nm{min-height:44px;font-size:16px}.add{min-height:44px}
- .tabs{width:100%}.tab{flex:1;min-height:44px}
+ .ctrls{width:100%}.mnav{width:100%}#msel{flex:1}.tabs{width:100%}.tab{flex:1;min-height:44px}
 }
 @media print{.bar,.tabs,.add,.link{display:none}}
 </style></head><body class="manha"><div id="shell">
 <header class="wrap tophd">
- <div class="ttlrow"><h1 id="ttl">Folgas da manhã</h1><span class="kick">Janeiro 2027</span></div>
- <div class="tabs" role="tablist" aria-label="Turno"><button type="button" class="tab" role="tab" data-t="manha" aria-selected="true">Manhã</button><button type="button" class="tab" role="tab" data-t="tarde" aria-selected="false">Tarde</button></div>
+ <div class="ttlrow"><h1 id="ttl">Folgas da manhã</h1><span class="kick" id="kick">Janeiro 2027</span></div>
+ <div class="ctrls"><div class="mnav"><button type="button" class="mbtn" id="mprev" aria-label="Mês anterior">‹</button><select id="msel" aria-label="Mês"></select><button type="button" class="mbtn" id="mnext" aria-label="Próximo mês">›</button></div>
+ <div class="tabs" role="tablist" aria-label="Turno"><button type="button" class="tab" role="tab" data-t="manha" aria-selected="true">Manhã</button><button type="button" class="tab" role="tab" data-t="tarde" aria-selected="false">Tarde</button></div></div>
 </header>
 <div class="wrap">
  <div class="team"><b id="eqn">Equipe da manhã</b><span id="eql"></span><button type="button" class="link" id="eqbtn">Editar equipe</button></div>
  <div class="eqedit" id="eqbox" hidden><label for="eqta" id="eqlab">Equipe do turno (um nome por linha)</label><textarea id="eqta"></textarea><p>A equipe é a base da conta: em cada dia, trabalham todos da equipe menos quem está de folga.</p><div class="eqbtns"><button type="button" class="btn pri" id="eqok">Aplicar equipe</button><button type="button" class="btn" id="eqno">Cancelar</button></div></div>
 </div>
 <main class="wrap"><div id="cal"></div>
-<p class="note">O número amarelo é quantos trabalham; os nomes são quem folga. Nome com borda tracejada não está na equipe e não entra na conta. Domingos em coral; 25/01 é feriado só na cidade de São Paulo.</p>
+<p class="note">O número amarelo é quantos trabalham; os nomes são quem folga. Nome com borda tracejada não está na equipe e não entra na conta. Domingos em coral. Feriados nacionais e de São Paulo aparecem marcados; confira os feriados municipais da cidade da empresa.</p>
 <section class="summary" aria-labelledby="sumt"><h2 id="sumt">Quantas pessoas trabalham por semana</h2><p class="sumnote">Cada número é quantas pessoas da equipe trabalham no dia. O total da semana soma esses números (diárias trabalhadas) e a média divide pelo número de dias com escala.</p><div class="scroll" id="sum"></div></section>
 </main>
 <datalist id="nomes"></datalist>
-<div class="bar"><span id="st" role="status">Carregando…</span><span id="cf" hidden>Apagar todas as folgas do <b id="cft">turno</b>? <button type="button" class="btn danger" id="cfy">Apagar</button><button type="button" class="btn" id="cfn">Cancelar</button></span><button type="button" class="btn" id="clr">Limpar folgas</button><button type="button" class="btn" id="cp">Copiar escala</button><button type="button" class="btn" id="ex" hidden>Exportar arquivo</button><button type="button" class="btn" id="im" hidden>Importar arquivo</button><input type="file" id="imf" accept=".json,application/json" hidden><button type="button" class="btn" id="pdf" hidden>Baixar PDF (A4)</button><button type="button" class="btn pri" id="sv">Salvar escala</button></div>
+<div class="bar"><span id="st" role="status">Carregando…</span><span id="cf" hidden>Apagar as folgas <b id="cft">do mês</b>? <button type="button" class="btn danger" id="cfy">Apagar</button><button type="button" class="btn" id="cfn">Cancelar</button></span><button type="button" class="btn" id="clr">Limpar folgas</button><button type="button" class="btn" id="cp">Copiar escala</button><button type="button" class="btn" id="ex" hidden>Exportar arquivo</button><button type="button" class="btn" id="im" hidden>Importar arquivo</button><input type="file" id="imf" accept=".json,application/json" hidden><button type="button" class="btn" id="pdf" hidden>PDF do mês</button><button type="button" class="btn" id="pdfy" hidden>PDF do ano</button><button type="button" class="btn pri" id="sv">Salvar escala</button></div>
 </div>
-<script type="application/json" id="state">{"rev": 9, "inicio": 4, "equipe": {"manha": ["Patrícia", "Thalles", "Luiza", "Juan"], "tarde": ["Cida", "Deivid", "Bruna", "Ariane", "VAGA", "Beatriz", "Michely", "Clara", "Lucas", "Paula"]}, "manha": {"4": [{"nome": "Patrícia"}], "5": [{"nome": "Thalles"}], "6": [{"nome": "Thalles"}, {"nome": "Juan"}], "7": [{"nome": "Juan"}], "8": [{"nome": "Luiza"}], "10": [{"nome": "Patrícia"}, {"nome": "Luiza"}], "11": [{"nome": "Patrícia"}], "12": [{"nome": "Thalles"}], "13": [{"nome": "Patrícia"}], "14": [{"nome": "Luiza"}, {"nome": "Juan"}], "15": [{"nome": "Luiza"}], "17": [{"nome": "Thalles"}, {"nome": "Juan"}], "18": [{"nome": "Patrícia"}], "19": [{"nome": "Thalles"}], "20": [{"nome": "Thalles"}, {"nome": "Juan"}], "21": [{"nome": "Juan"}], "22": [{"nome": "Luiza"}], "24": [{"nome": "Patrícia"}, {"nome": "Luiza"}], "25": [{"nome": "Patrícia"}], "26": [{"nome": "Thalles"}], "27": [{"nome": "Patrícia"}], "28": [{"nome": "Luiza"}, {"nome": "Juan"}], "29": [{"nome": "Luiza"}], "31": [{"nome": "Thalles"}, {"nome": "Juan"}]}, "tarde": {"4": [{"nome": "Cida"}, {"nome": "Deivid"}], "5": [{"nome": "Bruna"}, {"nome": "VAGA"}, {"nome": "Michely"}], "6": [{"nome": "Beatriz"}, {"nome": "Michely"}, {"nome": "Clara"}], "7": [{"nome": "Beatriz"}, {"nome": "Clara"}, {"nome": "Lucas"}, {"nome": "Paula"}], "8": [{"nome": "Ariane"}, {"nome": "Lucas"}, {"nome": "Paula"}], "10": [{"nome": "Cida"}, {"nome": "Deivid"}, {"nome": "Bruna"}, {"nome": "Ariane"}, {"nome": "VAGA"}], "11": [{"nome": "Cida"}, {"nome": "Deivid"}], "12": [{"nome": "Bruna"}, {"nome": "VAGA"}], "13": [{"nome": "Bruna"}, {"nome": "VAGA"}, {"nome": "Michely"}, {"nome": "Clara"}], "14": [{"nome": "Cida"}, {"nome": "Ariane"}, {"nome": "Beatriz"}, {"nome": "Paula"}], "15": [{"nome": "Deivid"}, {"nome": "Ariane"}, {"nome": "Lucas"}], "17": [{"nome": "Beatriz"}, {"nome": "Michely"}, {"nome": "Clara"}, {"nome": "Lucas"}, {"nome": "Paula"}], "18": [{"nome": "Cida"}, {"nome": "Deivid"}], "19": [{"nome": "Bruna"}, {"nome": "VAGA"}, {"nome": "Michely"}], "20": [{"nome": "Beatriz"}, {"nome": "Michely"}, {"nome": "Clara"}], "21": [{"nome": "Beatriz"}, {"nome": "Clara"}, {"nome": "Lucas"}, {"nome": "Paula"}], "22": [{"nome": "Ariane"}, {"nome": "Lucas"}, {"nome": "Paula"}], "24": [{"nome": "Cida"}, {"nome": "Deivid"}, {"nome": "Bruna"}, {"nome": "Ariane"}, {"nome": "VAGA"}], "25": [{"nome": "Cida"}, {"nome": "Deivid"}], "26": [{"nome": "Bruna"}, {"nome": "VAGA"}], "27": [{"nome": "Bruna"}, {"nome": "VAGA"}, {"nome": "Michely"}, {"nome": "Clara"}], "28": [{"nome": "Cida"}, {"nome": "Ariane"}, {"nome": "Beatriz"}, {"nome": "Paula"}], "29": [{"nome": "Deivid"}, {"nome": "Ariane"}, {"nome": "Lucas"}], "31": [{"nome": "Beatriz"}, {"nome": "Michely"}, {"nome": "Clara"}, {"nome": "Lucas"}, {"nome": "Paula"}]}}</script>
+<script type="application/json" id="state">{"rev":14,"inicio":"1-4","equipe":{"manha":["Patrícia","Thalles","Luiza","Juan"],"tarde":["Cida","Deivid","Bruna","Ariane","VAGA","Beatriz","Michely","Clara","Lucas","Paula"]},"manha":{"1-4":[{"nome":"Patrícia"}],"1-5":[{"nome":"Thalles"}],"1-6":[{"nome":"Thalles"},{"nome":"Juan"}],"1-7":[{"nome":"Juan"}],"1-8":[{"nome":"Luiza"}],"1-10":[{"nome":"Patrícia"},{"nome":"Luiza"}],"1-11":[{"nome":"Patrícia"}],"1-12":[{"nome":"Thalles"}],"1-13":[{"nome":"Patrícia"}],"1-14":[{"nome":"Luiza"},{"nome":"Juan"}],"1-15":[{"nome":"Luiza"}],"1-17":[{"nome":"Thalles"},{"nome":"Juan"}],"1-18":[{"nome":"Patrícia"}],"1-19":[{"nome":"Thalles"}],"1-20":[{"nome":"Thalles"},{"nome":"Juan"}],"1-21":[{"nome":"Juan"}],"1-22":[{"nome":"Luiza"}],"1-24":[{"nome":"Patrícia"},{"nome":"Luiza"}],"1-25":[{"nome":"Patrícia"}],"1-26":[{"nome":"Thalles"}],"1-27":[{"nome":"Patrícia"}],"1-28":[{"nome":"Luiza"},{"nome":"Juan"}],"1-29":[{"nome":"Luiza"}],"1-31":[{"nome":"Thalles"},{"nome":"Juan"}],"2-1":[{"nome":"Patrícia"}],"2-2":[{"nome":"Thalles"}],"2-3":[{"nome":"Thalles"},{"nome":"Juan"}],"2-4":[{"nome":"Juan"}],"2-5":[{"nome":"Luiza"}],"2-7":[{"nome":"Patrícia"},{"nome":"Luiza"}],"2-8":[{"nome":"Patrícia"}],"2-9":[{"nome":"Thalles"}],"2-10":[{"nome":"Patrícia"}],"2-11":[{"nome":"Luiza"},{"nome":"Juan"}],"2-12":[{"nome":"Luiza"}],"2-14":[{"nome":"Thalles"},{"nome":"Juan"}],"2-15":[{"nome":"Patrícia"}],"2-16":[{"nome":"Thalles"}],"2-17":[{"nome":"Thalles"},{"nome":"Juan"}],"2-18":[{"nome":"Juan"}],"2-19":[{"nome":"Luiza"}],"2-21":[{"nome":"Patrícia"},{"nome":"Luiza"}],"2-22":[{"nome":"Patrícia"}],"2-23":[{"nome":"Thalles"}],"2-24":[{"nome":"Patrícia"}],"2-25":[{"nome":"Luiza"},{"nome":"Juan"}],"2-26":[{"nome":"Luiza"}],"2-28":[{"nome":"Thalles"},{"nome":"Juan"}],"3-1":[{"nome":"Patrícia"}],"3-2":[{"nome":"Thalles"}],"3-3":[{"nome":"Thalles"},{"nome":"Juan"}],"3-4":[{"nome":"Juan"}],"3-5":[{"nome":"Luiza"}],"3-7":[{"nome":"Patrícia"},{"nome":"Luiza"}],"3-8":[{"nome":"Patrícia"}],"3-9":[{"nome":"Thalles"}],"3-10":[{"nome":"Patrícia"}],"3-11":[{"nome":"Luiza"},{"nome":"Juan"}],"3-12":[{"nome":"Luiza"}],"3-14":[{"nome":"Thalles"},{"nome":"Juan"}],"3-15":[{"nome":"Patrícia"}],"3-16":[{"nome":"Thalles"}],"3-17":[{"nome":"Thalles"},{"nome":"Juan"}],"3-18":[{"nome":"Juan"}],"3-19":[{"nome":"Luiza"}],"3-21":[{"nome":"Patrícia"},{"nome":"Luiza"}],"3-22":[{"nome":"Patrícia"}],"3-23":[{"nome":"Thalles"}],"3-24":[{"nome":"Patrícia"}],"3-25":[{"nome":"Luiza"},{"nome":"Juan"}],"3-26":[{"nome":"Luiza"}],"3-28":[{"nome":"Thalles"},{"nome":"Juan"}],"3-29":[{"nome":"Patrícia"}],"3-30":[{"nome":"Thalles"}],"3-31":[{"nome":"Thalles"},{"nome":"Juan"}],"4-1":[{"nome":"Juan"}],"4-2":[{"nome":"Luiza"}],"4-4":[{"nome":"Patrícia"},{"nome":"Luiza"}],"4-5":[{"nome":"Patrícia"}],"4-6":[{"nome":"Thalles"}],"4-7":[{"nome":"Patrícia"}],"4-8":[{"nome":"Luiza"},{"nome":"Juan"}],"4-9":[{"nome":"Luiza"}],"4-11":[{"nome":"Thalles"},{"nome":"Juan"}],"4-12":[{"nome":"Patrícia"}],"4-13":[{"nome":"Thalles"}],"4-14":[{"nome":"Thalles"},{"nome":"Juan"}],"4-15":[{"nome":"Juan"}],"4-16":[{"nome":"Luiza"}],"4-18":[{"nome":"Patrícia"},{"nome":"Luiza"}],"4-19":[{"nome":"Patrícia"}],"4-20":[{"nome":"Thalles"}],"4-21":[{"nome":"Patrícia"}],"4-22":[{"nome":"Luiza"},{"nome":"Juan"}],"4-23":[{"nome":"Luiza"}],"4-25":[{"nome":"Thalles"},{"nome":"Juan"}],"4-26":[{"nome":"Patrícia"}],"4-27":[{"nome":"Thalles"}],"4-28":[{"nome":"Thalles"},{"nome":"Juan"}],"4-29":[{"nome":"Juan"}],"4-30":[{"nome":"Luiza"}],"5-2":[{"nome":"Patrícia"},{"nome":"Luiza"}],"5-3":[{"nome":"Patrícia"}],"5-4":[{"nome":"Thalles"}],"5-5":[{"nome":"Patrícia"}],"5-6":[{"nome":"Luiza"},{"nome":"Juan"}],"5-7":[{"nome":"Luiza"}],"5-9":[{"nome":"Thalles"},{"nome":"Juan"}],"5-10":[{"nome":"Patrícia"}],"5-11":[{"nome":"Thalles"}],"5-12":[{"nome":"Thalles"},{"nome":"Juan"}],"5-13":[{"nome":"Juan"}],"5-14":[{"nome":"Luiza"}],"5-16":[{"nome":"Patrícia"},{"nome":"Luiza"}],"5-17":[{"nome":"Patrícia"}],"5-18":[{"nome":"Thalles"}],"5-19":[{"nome":"Patrícia"}],"5-20":[{"nome":"Luiza"},{"nome":"Juan"}],"5-21":[{"nome":"Luiza"}],"5-23":[{"nome":"Thalles"},{"nome":"Juan"}],"5-24":[{"nome":"Patrícia"}],"5-25":[{"nome":"Thalles"}],"5-26":[{"nome":"Thalles"},{"nome":"Juan"}],"5-27":[{"nome":"Juan"}],"5-28":[{"nome":"Luiza"}],"5-30":[{"nome":"Patrícia"},{"nome":"Luiza"}],"5-31":[{"nome":"Patrícia"}],"6-1":[{"nome":"Thalles"}],"6-2":[{"nome":"Patrícia"}],"6-3":[{"nome":"Luiza"},{"nome":"Juan"}],"6-4":[{"nome":"Luiza"}],"6-6":[{"nome":"Thalles"},{"nome":"Juan"}],"6-7":[{"nome":"Patrícia"}],"6-8":[{"nome":"Thalles"}],"6-9":[{"nome":"Thalles"},{"nome":"Juan"}],"6-10":[{"nome":"Juan"}],"6-11":[{"nome":"Luiza"}],"6-13":[{"nome":"Patrícia"},{"nome":"Luiza"}],"6-14":[{"nome":"Patrícia"}],"6-15":[{"nome":"Thalles"}],"6-16":[{"nome":"Patrícia"}],"6-17":[{"nome":"Luiza"},{"nome":"Juan"}],"6-18":[{"nome":"Luiza"}],"6-20":[{"nome":"Thalles"},{"nome":"Juan"}],"6-21":[{"nome":"Patrícia"}],"6-22":[{"nome":"Thalles"}],"6-23":[{"nome":"Thalles"},{"nome":"Juan"}],"6-24":[{"nome":"Juan"}],"6-25":[{"nome":"Luiza"}],"6-27":[{"nome":"Patrícia"},{"nome":"Luiza"}],"6-28":[{"nome":"Patrícia"}],"6-29":[{"nome":"Thalles"}],"6-30":[{"nome":"Patrícia"}],"7-1":[{"nome":"Luiza"},{"nome":"Juan"}],"7-2":[{"nome":"Luiza"}],"7-4":[{"nome":"Thalles"},{"nome":"Juan"}],"7-5":[{"nome":"Patrícia"}],"7-6":[{"nome":"Thalles"}],"7-7":[{"nome":"Thalles"},{"nome":"Juan"}],"7-8":[{"nome":"Juan"}],"7-9":[{"nome":"Luiza"}],"7-11":[{"nome":"Patrícia"},{"nome":"Luiza"}],"7-12":[{"nome":"Patrícia"}],"7-13":[{"nome":"Thalles"}],"7-14":[{"nome":"Patrícia"}],"7-15":[{"nome":"Luiza"},{"nome":"Juan"}],"7-16":[{"nome":"Luiza"}],"7-18":[{"nome":"Thalles"},{"nome":"Juan"}],"7-19":[{"nome":"Patrícia"}],"7-20":[{"nome":"Thalles"}],"7-21":[{"nome":"Thalles"},{"nome":"Juan"}],"7-22":[{"nome":"Juan"}],"7-23":[{"nome":"Luiza"}],"7-25":[{"nome":"Patrícia"},{"nome":"Luiza"}],"7-26":[{"nome":"Patrícia"}],"7-27":[{"nome":"Thalles"}],"7-28":[{"nome":"Patrícia"}],"7-29":[{"nome":"Luiza"},{"nome":"Juan"}],"7-30":[{"nome":"Luiza"}],"8-1":[{"nome":"Thalles"},{"nome":"Juan"}],"8-2":[{"nome":"Patrícia"}],"8-3":[{"nome":"Thalles"}],"8-4":[{"nome":"Thalles"},{"nome":"Juan"}],"8-5":[{"nome":"Juan"}],"8-6":[{"nome":"Luiza"}],"8-8":[{"nome":"Patrícia"},{"nome":"Luiza"}],"8-9":[{"nome":"Patrícia"}],"8-10":[{"nome":"Thalles"}],"8-11":[{"nome":"Patrícia"}],"8-12":[{"nome":"Luiza"},{"nome":"Juan"}],"8-13":[{"nome":"Luiza"}],"8-15":[{"nome":"Thalles"},{"nome":"Juan"}],"8-16":[{"nome":"Patrícia"}],"8-17":[{"nome":"Thalles"}],"8-18":[{"nome":"Thalles"},{"nome":"Juan"}],"8-19":[{"nome":"Juan"}],"8-20":[{"nome":"Luiza"}],"8-22":[{"nome":"Patrícia"},{"nome":"Luiza"}],"8-23":[{"nome":"Patrícia"}],"8-24":[{"nome":"Thalles"}],"8-25":[{"nome":"Patrícia"}],"8-26":[{"nome":"Luiza"},{"nome":"Juan"}],"8-27":[{"nome":"Luiza"}],"8-29":[{"nome":"Thalles"},{"nome":"Juan"}],"8-30":[{"nome":"Patrícia"}],"8-31":[{"nome":"Thalles"}],"9-1":[{"nome":"Thalles"},{"nome":"Juan"}],"9-2":[{"nome":"Juan"}],"9-3":[{"nome":"Luiza"}],"9-5":[{"nome":"Patrícia"},{"nome":"Luiza"}],"9-6":[{"nome":"Patrícia"}],"9-7":[{"nome":"Thalles"}],"9-8":[{"nome":"Patrícia"}],"9-9":[{"nome":"Luiza"},{"nome":"Juan"}],"9-10":[{"nome":"Luiza"}],"9-12":[{"nome":"Thalles"},{"nome":"Juan"}],"9-13":[{"nome":"Patrícia"}],"9-14":[{"nome":"Thalles"}],"9-15":[{"nome":"Thalles"},{"nome":"Juan"}],"9-16":[{"nome":"Juan"}],"9-17":[{"nome":"Luiza"}],"9-19":[{"nome":"Patrícia"},{"nome":"Luiza"}],"9-20":[{"nome":"Patrícia"}],"9-21":[{"nome":"Thalles"}],"9-22":[{"nome":"Patrícia"}],"9-23":[{"nome":"Luiza"},{"nome":"Juan"}],"9-24":[{"nome":"Luiza"}],"9-26":[{"nome":"Thalles"},{"nome":"Juan"}],"9-27":[{"nome":"Patrícia"}],"9-28":[{"nome":"Thalles"}],"9-29":[{"nome":"Thalles"},{"nome":"Juan"}],"9-30":[{"nome":"Juan"}],"10-1":[{"nome":"Luiza"}],"10-3":[{"nome":"Patrícia"},{"nome":"Luiza"}],"10-4":[{"nome":"Patrícia"}],"10-5":[{"nome":"Thalles"}],"10-6":[{"nome":"Patrícia"}],"10-7":[{"nome":"Luiza"},{"nome":"Juan"}],"10-8":[{"nome":"Luiza"}],"10-10":[{"nome":"Thalles"},{"nome":"Juan"}],"10-11":[{"nome":"Patrícia"}],"10-12":[{"nome":"Thalles"}],"10-13":[{"nome":"Thalles"},{"nome":"Juan"}],"10-14":[{"nome":"Juan"}],"10-15":[{"nome":"Luiza"}],"10-17":[{"nome":"Patrícia"},{"nome":"Luiza"}],"10-18":[{"nome":"Patrícia"}],"10-19":[{"nome":"Thalles"}],"10-20":[{"nome":"Patrícia"}],"10-21":[{"nome":"Luiza"},{"nome":"Juan"}],"10-22":[{"nome":"Luiza"}],"10-24":[{"nome":"Thalles"},{"nome":"Juan"}],"10-25":[{"nome":"Patrícia"}],"10-26":[{"nome":"Thalles"}],"10-27":[{"nome":"Thalles"},{"nome":"Juan"}],"10-28":[{"nome":"Juan"}],"10-29":[{"nome":"Luiza"}],"10-31":[{"nome":"Patrícia"},{"nome":"Luiza"}],"11-1":[{"nome":"Patrícia"}],"11-2":[{"nome":"Thalles"}],"11-3":[{"nome":"Patrícia"}],"11-4":[{"nome":"Luiza"},{"nome":"Juan"}],"11-5":[{"nome":"Luiza"}],"11-7":[{"nome":"Thalles"},{"nome":"Juan"}],"11-8":[{"nome":"Patrícia"}],"11-9":[{"nome":"Thalles"}],"11-10":[{"nome":"Thalles"},{"nome":"Juan"}],"11-11":[{"nome":"Juan"}],"11-12":[{"nome":"Luiza"}],"11-14":[{"nome":"Patrícia"},{"nome":"Luiza"}],"11-15":[{"nome":"Patrícia"}],"11-16":[{"nome":"Thalles"}],"11-17":[{"nome":"Patrícia"}],"11-18":[{"nome":"Luiza"},{"nome":"Juan"}],"11-19":[{"nome":"Luiza"}],"11-21":[{"nome":"Thalles"},{"nome":"Juan"}],"11-22":[{"nome":"Patrícia"}],"11-23":[{"nome":"Thalles"}],"11-24":[{"nome":"Thalles"},{"nome":"Juan"}],"11-25":[{"nome":"Juan"}],"11-26":[{"nome":"Luiza"}],"11-28":[{"nome":"Patrícia"},{"nome":"Luiza"}],"11-29":[{"nome":"Patrícia"}],"11-30":[{"nome":"Thalles"}],"12-1":[{"nome":"Patrícia"}],"12-2":[{"nome":"Luiza"},{"nome":"Juan"}],"12-3":[{"nome":"Luiza"}],"12-5":[{"nome":"Thalles"},{"nome":"Juan"}],"12-6":[{"nome":"Patrícia"}],"12-7":[{"nome":"Thalles"}],"12-8":[{"nome":"Thalles"},{"nome":"Juan"}],"12-9":[{"nome":"Juan"}],"12-10":[{"nome":"Luiza"}],"12-12":[{"nome":"Patrícia"},{"nome":"Luiza"}],"12-13":[{"nome":"Patrícia"}],"12-14":[{"nome":"Thalles"}],"12-15":[{"nome":"Patrícia"}],"12-16":[{"nome":"Luiza"},{"nome":"Juan"}],"12-17":[{"nome":"Luiza"}],"12-19":[{"nome":"Thalles"},{"nome":"Juan"}],"12-20":[{"nome":"Patrícia"}],"12-21":[{"nome":"Thalles"}],"12-22":[{"nome":"Thalles"},{"nome":"Juan"}],"12-23":[{"nome":"Juan"}],"12-24":[{"nome":"Luiza"}],"12-26":[{"nome":"Patrícia"},{"nome":"Luiza"}],"12-27":[{"nome":"Patrícia"}],"12-28":[{"nome":"Thalles"}],"12-29":[{"nome":"Patrícia"}],"12-30":[{"nome":"Luiza"},{"nome":"Juan"}],"12-31":[{"nome":"Luiza"}]},"tarde":{"1-4":[{"nome":"Cida"},{"nome":"Deivid"}],"1-5":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"}],"1-6":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"}],"1-7":[{"nome":"Beatriz"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"1-8":[{"nome":"Ariane"},{"nome":"Lucas"},{"nome":"Paula"}],"1-10":[{"nome":"Cida"},{"nome":"Deivid"},{"nome":"Bruna"},{"nome":"Ariane"},{"nome":"VAGA"}],"1-11":[{"nome":"Cida"},{"nome":"Deivid"}],"1-12":[{"nome":"Bruna"},{"nome":"VAGA"}],"1-13":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"},{"nome":"Clara"}],"1-14":[{"nome":"Cida"},{"nome":"Ariane"},{"nome":"Beatriz"},{"nome":"Paula"}],"1-15":[{"nome":"Deivid"},{"nome":"Ariane"},{"nome":"Lucas"}],"1-17":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"1-18":[{"nome":"Cida"},{"nome":"Deivid"}],"1-19":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"}],"1-20":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"}],"1-21":[{"nome":"Beatriz"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"1-22":[{"nome":"Ariane"},{"nome":"Lucas"},{"nome":"Paula"}],"1-24":[{"nome":"Cida"},{"nome":"Deivid"},{"nome":"Bruna"},{"nome":"Ariane"},{"nome":"VAGA"}],"1-25":[{"nome":"Cida"},{"nome":"Deivid"}],"1-26":[{"nome":"Bruna"},{"nome":"VAGA"}],"1-27":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"},{"nome":"Clara"}],"1-28":[{"nome":"Cida"},{"nome":"Ariane"},{"nome":"Beatriz"},{"nome":"Paula"}],"1-29":[{"nome":"Deivid"},{"nome":"Ariane"},{"nome":"Lucas"}],"1-31":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"2-1":[{"nome":"Cida"},{"nome":"Deivid"}],"2-2":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"}],"2-3":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"}],"2-4":[{"nome":"Beatriz"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"2-5":[{"nome":"Ariane"},{"nome":"Lucas"},{"nome":"Paula"}],"2-7":[{"nome":"Cida"},{"nome":"Deivid"},{"nome":"Bruna"},{"nome":"Ariane"},{"nome":"VAGA"}],"2-8":[{"nome":"Cida"},{"nome":"Deivid"}],"2-9":[{"nome":"Bruna"},{"nome":"VAGA"}],"2-10":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"},{"nome":"Clara"}],"2-11":[{"nome":"Cida"},{"nome":"Ariane"},{"nome":"Beatriz"},{"nome":"Paula"}],"2-12":[{"nome":"Deivid"},{"nome":"Ariane"},{"nome":"Lucas"}],"2-14":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"2-15":[{"nome":"Cida"},{"nome":"Deivid"}],"2-16":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"}],"2-17":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"}],"2-18":[{"nome":"Beatriz"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"2-19":[{"nome":"Ariane"},{"nome":"Lucas"},{"nome":"Paula"}],"2-21":[{"nome":"Cida"},{"nome":"Deivid"},{"nome":"Bruna"},{"nome":"Ariane"},{"nome":"VAGA"}],"2-22":[{"nome":"Cida"},{"nome":"Deivid"}],"2-23":[{"nome":"Bruna"},{"nome":"VAGA"}],"2-24":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"},{"nome":"Clara"}],"2-25":[{"nome":"Cida"},{"nome":"Ariane"},{"nome":"Beatriz"},{"nome":"Paula"}],"2-26":[{"nome":"Deivid"},{"nome":"Ariane"},{"nome":"Lucas"}],"2-28":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"3-1":[{"nome":"Cida"},{"nome":"Deivid"}],"3-2":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"}],"3-3":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"}],"3-4":[{"nome":"Beatriz"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"3-5":[{"nome":"Ariane"},{"nome":"Lucas"},{"nome":"Paula"}],"3-7":[{"nome":"Cida"},{"nome":"Deivid"},{"nome":"Bruna"},{"nome":"Ariane"},{"nome":"VAGA"}],"3-8":[{"nome":"Cida"},{"nome":"Deivid"}],"3-9":[{"nome":"Bruna"},{"nome":"VAGA"}],"3-10":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"},{"nome":"Clara"}],"3-11":[{"nome":"Cida"},{"nome":"Ariane"},{"nome":"Beatriz"},{"nome":"Paula"}],"3-12":[{"nome":"Deivid"},{"nome":"Ariane"},{"nome":"Lucas"}],"3-14":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"3-15":[{"nome":"Cida"},{"nome":"Deivid"}],"3-16":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"}],"3-17":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"}],"3-18":[{"nome":"Beatriz"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"3-19":[{"nome":"Ariane"},{"nome":"Lucas"},{"nome":"Paula"}],"3-21":[{"nome":"Cida"},{"nome":"Deivid"},{"nome":"Bruna"},{"nome":"Ariane"},{"nome":"VAGA"}],"3-22":[{"nome":"Cida"},{"nome":"Deivid"}],"3-23":[{"nome":"Bruna"},{"nome":"VAGA"}],"3-24":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"},{"nome":"Clara"}],"3-25":[{"nome":"Cida"},{"nome":"Ariane"},{"nome":"Beatriz"},{"nome":"Paula"}],"3-26":[{"nome":"Deivid"},{"nome":"Ariane"},{"nome":"Lucas"}],"3-28":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"3-29":[{"nome":"Cida"},{"nome":"Deivid"}],"3-30":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"}],"3-31":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"}],"4-1":[{"nome":"Beatriz"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"4-2":[{"nome":"Ariane"},{"nome":"Lucas"},{"nome":"Paula"}],"4-4":[{"nome":"Cida"},{"nome":"Deivid"},{"nome":"Bruna"},{"nome":"Ariane"},{"nome":"VAGA"}],"4-5":[{"nome":"Cida"},{"nome":"Deivid"}],"4-6":[{"nome":"Bruna"},{"nome":"VAGA"}],"4-7":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"},{"nome":"Clara"}],"4-8":[{"nome":"Cida"},{"nome":"Ariane"},{"nome":"Beatriz"},{"nome":"Paula"}],"4-9":[{"nome":"Deivid"},{"nome":"Ariane"},{"nome":"Lucas"}],"4-11":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"4-12":[{"nome":"Cida"},{"nome":"Deivid"}],"4-13":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"}],"4-14":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"}],"4-15":[{"nome":"Beatriz"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"4-16":[{"nome":"Ariane"},{"nome":"Lucas"},{"nome":"Paula"}],"4-18":[{"nome":"Cida"},{"nome":"Deivid"},{"nome":"Bruna"},{"nome":"Ariane"},{"nome":"VAGA"}],"4-19":[{"nome":"Cida"},{"nome":"Deivid"}],"4-20":[{"nome":"Bruna"},{"nome":"VAGA"}],"4-21":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"},{"nome":"Clara"}],"4-22":[{"nome":"Cida"},{"nome":"Ariane"},{"nome":"Beatriz"},{"nome":"Paula"}],"4-23":[{"nome":"Deivid"},{"nome":"Ariane"},{"nome":"Lucas"}],"4-25":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"4-26":[{"nome":"Cida"},{"nome":"Deivid"}],"4-27":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"}],"4-28":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"}],"4-29":[{"nome":"Beatriz"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"4-30":[{"nome":"Ariane"},{"nome":"Lucas"},{"nome":"Paula"}],"5-2":[{"nome":"Cida"},{"nome":"Deivid"},{"nome":"Bruna"},{"nome":"Ariane"},{"nome":"VAGA"}],"5-3":[{"nome":"Cida"},{"nome":"Deivid"}],"5-4":[{"nome":"Bruna"},{"nome":"VAGA"}],"5-5":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"},{"nome":"Clara"}],"5-6":[{"nome":"Cida"},{"nome":"Ariane"},{"nome":"Beatriz"},{"nome":"Paula"}],"5-7":[{"nome":"Deivid"},{"nome":"Ariane"},{"nome":"Lucas"}],"5-9":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"5-10":[{"nome":"Cida"},{"nome":"Deivid"}],"5-11":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"}],"5-12":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"}],"5-13":[{"nome":"Beatriz"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"5-14":[{"nome":"Ariane"},{"nome":"Lucas"},{"nome":"Paula"}],"5-16":[{"nome":"Cida"},{"nome":"Deivid"},{"nome":"Bruna"},{"nome":"Ariane"},{"nome":"VAGA"}],"5-17":[{"nome":"Cida"},{"nome":"Deivid"}],"5-18":[{"nome":"Bruna"},{"nome":"VAGA"}],"5-19":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"},{"nome":"Clara"}],"5-20":[{"nome":"Cida"},{"nome":"Ariane"},{"nome":"Beatriz"},{"nome":"Paula"}],"5-21":[{"nome":"Deivid"},{"nome":"Ariane"},{"nome":"Lucas"}],"5-23":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"5-24":[{"nome":"Cida"},{"nome":"Deivid"}],"5-25":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"}],"5-26":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"}],"5-27":[{"nome":"Beatriz"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"5-28":[{"nome":"Ariane"},{"nome":"Lucas"},{"nome":"Paula"}],"5-30":[{"nome":"Cida"},{"nome":"Deivid"},{"nome":"Bruna"},{"nome":"Ariane"},{"nome":"VAGA"}],"5-31":[{"nome":"Cida"},{"nome":"Deivid"}],"6-1":[{"nome":"Bruna"},{"nome":"VAGA"}],"6-2":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"},{"nome":"Clara"}],"6-3":[{"nome":"Cida"},{"nome":"Ariane"},{"nome":"Beatriz"},{"nome":"Paula"}],"6-4":[{"nome":"Deivid"},{"nome":"Ariane"},{"nome":"Lucas"}],"6-6":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"6-7":[{"nome":"Cida"},{"nome":"Deivid"}],"6-8":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"}],"6-9":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"}],"6-10":[{"nome":"Beatriz"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"6-11":[{"nome":"Ariane"},{"nome":"Lucas"},{"nome":"Paula"}],"6-13":[{"nome":"Cida"},{"nome":"Deivid"},{"nome":"Bruna"},{"nome":"Ariane"},{"nome":"VAGA"}],"6-14":[{"nome":"Cida"},{"nome":"Deivid"}],"6-15":[{"nome":"Bruna"},{"nome":"VAGA"}],"6-16":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"},{"nome":"Clara"}],"6-17":[{"nome":"Cida"},{"nome":"Ariane"},{"nome":"Beatriz"},{"nome":"Paula"}],"6-18":[{"nome":"Deivid"},{"nome":"Ariane"},{"nome":"Lucas"}],"6-20":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"6-21":[{"nome":"Cida"},{"nome":"Deivid"}],"6-22":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"}],"6-23":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"}],"6-24":[{"nome":"Beatriz"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"6-25":[{"nome":"Ariane"},{"nome":"Lucas"},{"nome":"Paula"}],"6-27":[{"nome":"Cida"},{"nome":"Deivid"},{"nome":"Bruna"},{"nome":"Ariane"},{"nome":"VAGA"}],"6-28":[{"nome":"Cida"},{"nome":"Deivid"}],"6-29":[{"nome":"Bruna"},{"nome":"VAGA"}],"6-30":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"},{"nome":"Clara"}],"7-1":[{"nome":"Cida"},{"nome":"Ariane"},{"nome":"Beatriz"},{"nome":"Paula"}],"7-2":[{"nome":"Deivid"},{"nome":"Ariane"},{"nome":"Lucas"}],"7-4":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"7-5":[{"nome":"Cida"},{"nome":"Deivid"}],"7-6":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"}],"7-7":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"}],"7-8":[{"nome":"Beatriz"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"7-9":[{"nome":"Ariane"},{"nome":"Lucas"},{"nome":"Paula"}],"7-11":[{"nome":"Cida"},{"nome":"Deivid"},{"nome":"Bruna"},{"nome":"Ariane"},{"nome":"VAGA"}],"7-12":[{"nome":"Cida"},{"nome":"Deivid"}],"7-13":[{"nome":"Bruna"},{"nome":"VAGA"}],"7-14":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"},{"nome":"Clara"}],"7-15":[{"nome":"Cida"},{"nome":"Ariane"},{"nome":"Beatriz"},{"nome":"Paula"}],"7-16":[{"nome":"Deivid"},{"nome":"Ariane"},{"nome":"Lucas"}],"7-18":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"7-19":[{"nome":"Cida"},{"nome":"Deivid"}],"7-20":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"}],"7-21":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"}],"7-22":[{"nome":"Beatriz"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"7-23":[{"nome":"Ariane"},{"nome":"Lucas"},{"nome":"Paula"}],"7-25":[{"nome":"Cida"},{"nome":"Deivid"},{"nome":"Bruna"},{"nome":"Ariane"},{"nome":"VAGA"}],"7-26":[{"nome":"Cida"},{"nome":"Deivid"}],"7-27":[{"nome":"Bruna"},{"nome":"VAGA"}],"7-28":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"},{"nome":"Clara"}],"7-29":[{"nome":"Cida"},{"nome":"Ariane"},{"nome":"Beatriz"},{"nome":"Paula"}],"7-30":[{"nome":"Deivid"},{"nome":"Ariane"},{"nome":"Lucas"}],"8-1":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"8-2":[{"nome":"Cida"},{"nome":"Deivid"}],"8-3":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"}],"8-4":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"}],"8-5":[{"nome":"Beatriz"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"8-6":[{"nome":"Ariane"},{"nome":"Lucas"},{"nome":"Paula"}],"8-8":[{"nome":"Cida"},{"nome":"Deivid"},{"nome":"Bruna"},{"nome":"Ariane"},{"nome":"VAGA"}],"8-9":[{"nome":"Cida"},{"nome":"Deivid"}],"8-10":[{"nome":"Bruna"},{"nome":"VAGA"}],"8-11":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"},{"nome":"Clara"}],"8-12":[{"nome":"Cida"},{"nome":"Ariane"},{"nome":"Beatriz"},{"nome":"Paula"}],"8-13":[{"nome":"Deivid"},{"nome":"Ariane"},{"nome":"Lucas"}],"8-15":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"8-16":[{"nome":"Cida"},{"nome":"Deivid"}],"8-17":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"}],"8-18":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"}],"8-19":[{"nome":"Beatriz"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"8-20":[{"nome":"Ariane"},{"nome":"Lucas"},{"nome":"Paula"}],"8-22":[{"nome":"Cida"},{"nome":"Deivid"},{"nome":"Bruna"},{"nome":"Ariane"},{"nome":"VAGA"}],"8-23":[{"nome":"Cida"},{"nome":"Deivid"}],"8-24":[{"nome":"Bruna"},{"nome":"VAGA"}],"8-25":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"},{"nome":"Clara"}],"8-26":[{"nome":"Cida"},{"nome":"Ariane"},{"nome":"Beatriz"},{"nome":"Paula"}],"8-27":[{"nome":"Deivid"},{"nome":"Ariane"},{"nome":"Lucas"}],"8-29":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"8-30":[{"nome":"Cida"},{"nome":"Deivid"}],"8-31":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"}],"9-1":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"}],"9-2":[{"nome":"Beatriz"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"9-3":[{"nome":"Ariane"},{"nome":"Lucas"},{"nome":"Paula"}],"9-5":[{"nome":"Cida"},{"nome":"Deivid"},{"nome":"Bruna"},{"nome":"Ariane"},{"nome":"VAGA"}],"9-6":[{"nome":"Cida"},{"nome":"Deivid"}],"9-7":[{"nome":"Bruna"},{"nome":"VAGA"}],"9-8":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"},{"nome":"Clara"}],"9-9":[{"nome":"Cida"},{"nome":"Ariane"},{"nome":"Beatriz"},{"nome":"Paula"}],"9-10":[{"nome":"Deivid"},{"nome":"Ariane"},{"nome":"Lucas"}],"9-12":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"9-13":[{"nome":"Cida"},{"nome":"Deivid"}],"9-14":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"}],"9-15":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"}],"9-16":[{"nome":"Beatriz"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"9-17":[{"nome":"Ariane"},{"nome":"Lucas"},{"nome":"Paula"}],"9-19":[{"nome":"Cida"},{"nome":"Deivid"},{"nome":"Bruna"},{"nome":"Ariane"},{"nome":"VAGA"}],"9-20":[{"nome":"Cida"},{"nome":"Deivid"}],"9-21":[{"nome":"Bruna"},{"nome":"VAGA"}],"9-22":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"},{"nome":"Clara"}],"9-23":[{"nome":"Cida"},{"nome":"Ariane"},{"nome":"Beatriz"},{"nome":"Paula"}],"9-24":[{"nome":"Deivid"},{"nome":"Ariane"},{"nome":"Lucas"}],"9-26":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"9-27":[{"nome":"Cida"},{"nome":"Deivid"}],"9-28":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"}],"9-29":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"}],"9-30":[{"nome":"Beatriz"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"10-1":[{"nome":"Ariane"},{"nome":"Lucas"},{"nome":"Paula"}],"10-3":[{"nome":"Cida"},{"nome":"Deivid"},{"nome":"Bruna"},{"nome":"Ariane"},{"nome":"VAGA"}],"10-4":[{"nome":"Cida"},{"nome":"Deivid"}],"10-5":[{"nome":"Bruna"},{"nome":"VAGA"}],"10-6":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"},{"nome":"Clara"}],"10-7":[{"nome":"Cida"},{"nome":"Ariane"},{"nome":"Beatriz"},{"nome":"Paula"}],"10-8":[{"nome":"Deivid"},{"nome":"Ariane"},{"nome":"Lucas"}],"10-10":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"10-11":[{"nome":"Cida"},{"nome":"Deivid"}],"10-12":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"}],"10-13":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"}],"10-14":[{"nome":"Beatriz"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"10-15":[{"nome":"Ariane"},{"nome":"Lucas"},{"nome":"Paula"}],"10-17":[{"nome":"Cida"},{"nome":"Deivid"},{"nome":"Bruna"},{"nome":"Ariane"},{"nome":"VAGA"}],"10-18":[{"nome":"Cida"},{"nome":"Deivid"}],"10-19":[{"nome":"Bruna"},{"nome":"VAGA"}],"10-20":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"},{"nome":"Clara"}],"10-21":[{"nome":"Cida"},{"nome":"Ariane"},{"nome":"Beatriz"},{"nome":"Paula"}],"10-22":[{"nome":"Deivid"},{"nome":"Ariane"},{"nome":"Lucas"}],"10-24":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"10-25":[{"nome":"Cida"},{"nome":"Deivid"}],"10-26":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"}],"10-27":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"}],"10-28":[{"nome":"Beatriz"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"10-29":[{"nome":"Ariane"},{"nome":"Lucas"},{"nome":"Paula"}],"10-31":[{"nome":"Cida"},{"nome":"Deivid"},{"nome":"Bruna"},{"nome":"Ariane"},{"nome":"VAGA"}],"11-1":[{"nome":"Cida"},{"nome":"Deivid"}],"11-2":[{"nome":"Bruna"},{"nome":"VAGA"}],"11-3":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"},{"nome":"Clara"}],"11-4":[{"nome":"Cida"},{"nome":"Ariane"},{"nome":"Beatriz"},{"nome":"Paula"}],"11-5":[{"nome":"Deivid"},{"nome":"Ariane"},{"nome":"Lucas"}],"11-7":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"11-8":[{"nome":"Cida"},{"nome":"Deivid"}],"11-9":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"}],"11-10":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"}],"11-11":[{"nome":"Beatriz"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"11-12":[{"nome":"Ariane"},{"nome":"Lucas"},{"nome":"Paula"}],"11-14":[{"nome":"Cida"},{"nome":"Deivid"},{"nome":"Bruna"},{"nome":"Ariane"},{"nome":"VAGA"}],"11-15":[{"nome":"Cida"},{"nome":"Deivid"}],"11-16":[{"nome":"Bruna"},{"nome":"VAGA"}],"11-17":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"},{"nome":"Clara"}],"11-18":[{"nome":"Cida"},{"nome":"Ariane"},{"nome":"Beatriz"},{"nome":"Paula"}],"11-19":[{"nome":"Deivid"},{"nome":"Ariane"},{"nome":"Lucas"}],"11-21":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"11-22":[{"nome":"Cida"},{"nome":"Deivid"}],"11-23":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"}],"11-24":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"}],"11-25":[{"nome":"Beatriz"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"11-26":[{"nome":"Ariane"},{"nome":"Lucas"},{"nome":"Paula"}],"11-28":[{"nome":"Cida"},{"nome":"Deivid"},{"nome":"Bruna"},{"nome":"Ariane"},{"nome":"VAGA"}],"11-29":[{"nome":"Cida"},{"nome":"Deivid"}],"11-30":[{"nome":"Bruna"},{"nome":"VAGA"}],"12-1":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"},{"nome":"Clara"}],"12-2":[{"nome":"Cida"},{"nome":"Ariane"},{"nome":"Beatriz"},{"nome":"Paula"}],"12-3":[{"nome":"Deivid"},{"nome":"Ariane"},{"nome":"Lucas"}],"12-5":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"12-6":[{"nome":"Cida"},{"nome":"Deivid"}],"12-7":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"}],"12-8":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"}],"12-9":[{"nome":"Beatriz"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"12-10":[{"nome":"Ariane"},{"nome":"Lucas"},{"nome":"Paula"}],"12-12":[{"nome":"Cida"},{"nome":"Deivid"},{"nome":"Bruna"},{"nome":"Ariane"},{"nome":"VAGA"}],"12-13":[{"nome":"Cida"},{"nome":"Deivid"}],"12-14":[{"nome":"Bruna"},{"nome":"VAGA"}],"12-15":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"},{"nome":"Clara"}],"12-16":[{"nome":"Cida"},{"nome":"Ariane"},{"nome":"Beatriz"},{"nome":"Paula"}],"12-17":[{"nome":"Deivid"},{"nome":"Ariane"},{"nome":"Lucas"}],"12-19":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"12-20":[{"nome":"Cida"},{"nome":"Deivid"}],"12-21":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"}],"12-22":[{"nome":"Beatriz"},{"nome":"Michely"},{"nome":"Clara"}],"12-23":[{"nome":"Beatriz"},{"nome":"Clara"},{"nome":"Lucas"},{"nome":"Paula"}],"12-24":[{"nome":"Ariane"},{"nome":"Lucas"},{"nome":"Paula"}],"12-26":[{"nome":"Cida"},{"nome":"Deivid"},{"nome":"Bruna"},{"nome":"Ariane"},{"nome":"VAGA"}],"12-27":[{"nome":"Cida"},{"nome":"Deivid"}],"12-28":[{"nome":"Bruna"},{"nome":"VAGA"}],"12-29":[{"nome":"Bruna"},{"nome":"VAGA"},{"nome":"Michely"},{"nome":"Clara"}],"12-30":[{"nome":"Cida"},{"nome":"Ariane"},{"nome":"Beatriz"},{"nome":"Paula"}],"12-31":[{"nome":"Deivid"},{"nome":"Ariane"},{"nome":"Lucas"}]}}</script>
 <script id="appjs">
 {
 const $=id=>document.getElementById(id);
 const SHELL=$('shell').outerHTML;
 const HEAD='<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Escala Janeiro 2027</title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..800&display=swap" rel="stylesheet">';
-const ANO=2027,MES=0,NDIAS=31;
-const FER={1:'Feriado nacional',25:'Aniv. de SP (feriado na capital)'};
-const FERS={1:'Feriado nacional',25:'Aniv. SP'};
+const ANO=2027;
+const MESES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const FER={'1-1':'Feriado nacional','1-25':'Aniv. de SP (feriado na capital)','2-8':'Carnaval (ponto facultativo)','2-9':'Carnaval (ponto facultativo)','3-26':'Sexta-feira Santa','4-21':'Tiradentes','5-1':'Dia do Trabalho','5-27':'Corpus Christi','7-9':'Feriado estadual de SP','9-7':'Independência','10-12':'N. Sra. Aparecida','11-2':'Finados','11-15':'Proclamação da República','11-20':'Consciência Negra','12-25':'Natal'};
+const FERS={'1-1':'Feriado nacional','1-25':'Aniv. SP','2-8':'Carnaval','2-9':'Carnaval','3-26':'Sexta-f. Santa','4-21':'Tiradentes','5-1':'Dia do Trabalho','5-27':'Corpus Christi','7-9':'Feriado SP','9-7':'Independência','10-12':'Aparecida','11-2':'Finados','11-15':'Proclamação','11-20':'Consc. Negra','12-25':'Natal'};
 const WD=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
-const WDH=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
 const WDL=['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
 const ORD=[1,2,3,4,5,6,0];
 const TN={manha:'Turno da manhã',tarde:'Turno da tarde'};
 const TS={manha:'manhã',tarde:'tarde'};
-const LS='escala-jan2027-rascunho';
+const LS='escala-2027-rascunho',LSS='escala-2027-salva',LSM='escala-2027-mes';
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const two=n=>String(n).padStart(2,'0');
 const norm=s=>String(s||'').trim().toLocaleLowerCase('pt-BR');
 const dec=n=>n.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1});
-function fixState(o){o=o||{};const e=o.equipe||{};return{rev:o.rev||0,inicio:o.inicio||1,equipe:{manha:e.manha||[],tarde:e.tarde||[]},manha:o.manha||{},tarde:o.tarde||{}}}
+const key=(m,d)=>(m+1)+'-'+d;
+const kOrd=k=>{const p=String(k).split('-').map(Number);return p[0]*100+(p[1]||0)};
+function fixState(o){o=o||{};const e=o.equipe||{};return{rev:o.rev||0,inicio:typeof o.inicio==='number'?'1-'+o.inicio:(o.inicio||'1-1'),equipe:{manha:e.manha||[],tarde:e.tarde||[]},manha:o.manha||{},tarde:o.tarde||{}}}
 let saved;try{saved=fixState(JSON.parse($('state').textContent))}catch(e){saved=fixState()}
-let st=JSON.parse(JSON.stringify(saved)),dirty=false,api=null,dl=null,busy=false,msg='';
-const HOSTED=!!(window.claude&&typeof window.claude.use==='function'),LSS='escala-jan2027-salva';
+let st=JSON.parse(JSON.stringify(saved)),dirty=false,api=null,dl=null,busy=false,msg='',CELLS={};
+const HOSTED=!!(window.claude&&typeof window.claude.use==='function');
 if(HOSTED){try{const d=JSON.parse(localStorage.getItem(LS)||'null');if(d&&d.base===saved.rev&&d.data&&d.data.manha){st=fixState(d.data);st.rev=saved.rev;dirty=true}}catch(e){}}
 else{try{const d=JSON.parse(localStorage.getItem(LSS)||'null');if(d&&d.manha&&d.rev===saved.rev){st=fixState(d);st.rev=saved.rev}}catch(e){}}
 let tab=location.hash==='#tarde'?'tarde':'manha';
+let mes=0;try{const v=localStorage.getItem(LSM);if(v!==null&&+v>=0&&+v<12)mes=+v}catch(e){}
 
-function weeks(){
- const first=(new Date(ANO,MES,1).getDay()+6)%7,prev=new Date(ANO,MES,0).getDate(),cells=[];
- for(let i=0;i<first;i++)cells.push({d:prev-first+1+i,out:1,m:12,wd:(i+1)%7});
- for(let d=1;d<=NDIAS;d++)cells.push({d,wd:new Date(ANO,MES,d).getDay(),m:MES+1});
- let k=1;while(cells.length%7)cells.push({d:k++,out:1,m:MES+2,wd:(cells.length%7+1)%7});
+function weeks(m){
+ const first=(new Date(ANO,m,1).getDay()+6)%7,nd=new Date(ANO,m+1,0).getDate(),cells=[],ini=kOrd(st.inicio);
+ const mk=(dt,out)=>{const c={d:dt.getDate(),m:dt.getMonth()+1,wd:dt.getDay(),out};if(!out){c.k=key(m,c.d);c.pre=kOrd(c.k)<ini}return c};
+ for(let i=0;i<first;i++)cells.push(mk(new Date(ANO,m,1-first+i),1));
+ for(let d=1;d<=nd;d++)cells.push(mk(new Date(ANO,m,d),0));
+ let j=1;while(cells.length%7)cells.push(mk(new Date(ANO,m,nd+j++),1));
  const w=[];for(let i=0;i<cells.length;i+=7)w.push(cells.slice(i,i+7));return w;
 }
 const fmt=c=>two(c.d)+'/'+two(c.m);
 const names=L=>(L||[]).map(p=>(p.nome||'').trim()).filter(Boolean);
-function working(s,k,d){const team=s.equipe[k];if(d<s.inicio||!team.length)return null;const off=new Set(names(s[k][d]).map(norm));return team.filter(n=>!off.has(norm(n))).length}
-function weekStats(s,k,week){const v=week.map(c=>c.out?null:working(s,k,c.d)),real=v.filter(x=>x!==null),tot=real.reduce((a,b)=>a+b,0);return{v,tot,days:real.length,avg:real.length?tot/real.length:null}}
+function working(s,k,c){if(c.out||c.pre)return null;const team=s.equipe[k];if(!team.length)return null;const off=new Set(names(s[k][c.k]).map(norm));return team.filter(n=>!off.has(norm(n))).length}
+function weekStats(s,k,week){const v=week.map(c=>working(s,k,c)),real=v.filter(x=>x!==null),tot=real.reduce((a,b)=>a+b,0);return{v,tot,days:real.length,avg:real.length?tot/real.length:null}}
 
-function workHTML(d){
- const w=working(st,tab,d);
+function workHTML(c){
+ const w=working(st,tab,c);
  if(w!==null)return `<span class="work"><b>${w}</b><span>trabalham</span></span>`;
- if(d<st.inicio)return `<span class="pre">Antes do início da escala</span>`;
+ if(c.pre)return `<span class="pre">Antes do início da escala</span>`;
  return '';
 }
 function dayHTML(c){
  if(c.out)return `<div class="day out" aria-hidden="true"><div class="dtop"><span class="num">${c.d}</span><span class="wdn">${WDL[c.wd]}</span></div></div>`;
- const L=st[tab][c.d]||[],n=Math.max(1,L.length),tset=new Set(st.equipe[tab].map(norm));
+ const L=st[tab][c.k]||[],n=Math.max(1,L.length),tset=new Set(st.equipe[tab].map(norm));
  let rows='';
- for(let i=0;i<n;i++){const v=(L[i]||{}).nome||'',warn=v.trim()&&tset.size&&!tset.has(norm(v));rows+=`<input class="nm${warn?' warn':''}" data-d="${c.d}" data-i="${i}" value="${esc(v)}" placeholder="Quem folga" list="nomes" autocomplete="off" aria-label="Folga ${i+1}, ${WDL[c.wd]} ${c.d} de janeiro"${warn?' title="Nome fora da equipe"':''}>`}
- const cls='day'+(c.wd===0?' dom':'')+(FER[c.d]?' fer':'');
- return `<div class="${cls}" id="d${c.d}"><div class="dtop"><span class="num">${c.d}</span><span class="wdn">${WDL[c.wd]}</span></div>${FER[c.d]?`<div class="fer-tag">${FER[c.d]}</div>`:''}<div class="rows">${rows}</div><button type="button" class="add" data-d="${c.d}">+ folga</button><span class="wslot">${workHTML(c.d)}</span></div>`;
+ for(let i=0;i<n;i++){const v=(L[i]||{}).nome||'',warn=v.trim()&&tset.size&&!tset.has(norm(v));rows+=`<input class="nm${warn?' warn':''}" data-d="${c.k}" data-i="${i}" value="${esc(v)}" placeholder="Quem folga" list="nomes" autocomplete="off" aria-label="Folga ${i+1}, ${WDL[c.wd]} ${c.d} de ${MESES[mes].toLowerCase()}"${warn?' title="Nome fora da equipe"':''}>`}
+ const cls='day'+(c.wd===0?' dom':'')+(FER[c.k]?' fer':'');
+ return `<div class="${cls}" id="d${c.k}"><div class="dtop"><span class="num">${c.d}</span><span class="wdn">${WDL[c.wd]}</span></div>${FER[c.k]?`<div class="fer-tag">${FER[c.k]}</div>`:''}<div class="rows">${rows}</div><button type="button" class="add" data-d="${c.k}">+ folga</button><span class="wslot">${workHTML(c)}</span></div>`;
 }
 function render(){
  document.body.className=tab;
  for(const b of document.querySelectorAll('.tab'))b.setAttribute('aria-selected',String(b.dataset.t===tab));
  $('ttl').textContent='Folgas da '+TS[tab];
- $('cft').textContent='turno da '+TS[tab];
- $('cal').innerHTML=weeks().map((wk,i)=>`<section class="band" aria-label="Semana ${i+1}"><div class="wkl"><b>Semana ${i+1}</b><span>${fmt(wk[0])} a ${fmt(wk[6])}</span></div><div class="days">${wk.map(dayHTML).join('')}</div></section>`).join('');
+ $('kick').textContent=MESES[mes]+' '+ANO;
+ $('msel').value=String(mes);$('mprev').disabled=mes===0;$('mnext').disabled=mes===11;
+ $('cft').textContent=`de ${MESES[mes].toLowerCase()} do turno da ${TS[tab]}`;
+ CELLS={};
+ $('cal').innerHTML=weeks(mes).map((wk,i)=>{for(const c of wk)if(!c.out)CELLS[c.k]=c;return `<section class="band" aria-label="Semana ${i+1}"><div class="wkl"><b>Semana ${i+1}</b><span>${fmt(wk[0])} a ${fmt(wk[6])}</span></div><div class="days">${wk.map(dayHTML).join('')}</div></section>`}).join('');
  team();summary();datalist();status();
 }
 function team(){
@@ -179,11 +193,11 @@ function team(){
  $('eqlab').textContent=`Equipe da ${TS[tab]} (um nome por linha)`;
 }
 function summary(){
- const W=weeks(),size=st.equipe[tab].length;let mt=0;
+ const W=weeks(mes),size=st.equipe[tab].length;let mt=0;
  let h=`<table class="sum"><thead><tr><th scope="col">Semana</th>${ORD.map(i=>`<th scope="col"${i===0?' class="dom"':''}>${WD[i]}</th>`).join('')}<th scope="col">Total na semana</th><th scope="col">Média por dia</th></tr></thead><tbody>`;
  W.forEach((wk,i)=>{const s=weekStats(st,tab,wk);mt+=s.tot;
   h+=`<tr><th scope="row"><b>Semana ${i+1}</b><span>${fmt(wk[0])} a ${fmt(wk[6])}</span></th>`+s.v.map(x=>x===null?'<td class="na">–</td>':`<td style="--p:${size?(x/size).toFixed(2):0}">${x}</td>`).join('')+`<td class="t">${s.days?s.tot:'–'}</td><td class="t">${s.avg===null?'–':dec(s.avg)}</td></tr>`});
- h+=`</tbody><tfoot><tr><th scope="row"><b>Janeiro</b></th><td colspan="7"></td><td class="t">${mt}</td><td></td></tr></tfoot></table>`;
+ h+=`</tbody><tfoot><tr><th scope="row"><b>${MESES[mes]}</b></th><td colspan="7"></td><td class="t">${mt}</td><td></td></tr></tfoot></table>`;
  $('sum').innerHTML=h;
 }
 function datalist(){
@@ -191,9 +205,9 @@ function datalist(){
  for(const L of Object.values(st[tab]))for(const n of names(L))if(!s.has(norm(n)))s.set(norm(n),n);
  $('nomes').innerHTML=[...s.values()].map(n=>`<option value="${esc(n)}">`).join('');
 }
-function refreshDay(d){
- const el=$('d'+d);if(!el)return;
- el.querySelector('.wslot').innerHTML=workHTML(+d);
+function refreshDay(k){
+ const el=$('d'+k),c=CELLS[k];if(!el||!c)return;
+ el.querySelector('.wslot').innerHTML=workHTML(c);
  const tset=new Set(st.equipe[tab].map(norm));
  for(const i of el.querySelectorAll('.nm')){const w=i.value.trim()&&tset.size&&!tset.has(norm(i.value));i.classList.toggle('warn',!!w);i.title=w?'Nome fora da equipe':''}
 }
@@ -202,13 +216,13 @@ function status(){
  el.textContent=msg||(busy?'Salvando…':dirty?'Alterações não salvas. Clique em “Salvar escala”.':HOSTED?'Tudo salvo.':'Salvo automaticamente neste navegador.');
  $('sv').disabled=busy;
 }
-function draft(){try{if(HOSTED)localStorage.setItem(LS,JSON.stringify({base:saved.rev,data:st}));else localStorage.setItem(LSS,JSON.stringify({...clean(st),rev:saved.rev}))}catch(e){}}
-function mark(){dirty=HOSTED;msg='';draft();status()}
 function clean(s){
  const o={inicio:s.inicio,equipe:{manha:s.equipe.manha.map(n=>n.trim()).filter(Boolean),tarde:s.equipe.tarde.map(n=>n.trim()).filter(Boolean)}};
  for(const k of ['manha','tarde']){o[k]={};for(const [d,L] of Object.entries(s[k])){const C=names(L).map(nome=>({nome}));if(C.length)o[k][d]=C}}
  return o;
 }
+function draft(){try{if(HOSTED)localStorage.setItem(LS,JSON.stringify({base:saved.rev,data:st}));else localStorage.setItem(LSS,JSON.stringify({...clean(st),rev:saved.rev}))}catch(e){}}
+function mark(){dirty=HOSTED;msg='';draft();status()}
 function buildDoc(s){
  const json=JSON.stringify(s).replace(/</g,'\\u003c');
  return '<!DOCTYPE html>\n<html lang="pt-BR"><head>'+HEAD+'<style id="css">'+$('css').textContent+'</style></head><body class="manha">'+SHELL+'\n<script type="application/json" id="state">'+json+'<\/script>\n<script id="appjs">'+$('appjs').textContent+'<\/script></body></html>';
@@ -225,11 +239,11 @@ async function save(){
  busy=false;status();
 }
 function asText(){
- const out=[];
+ const out=[],cells=weeks(mes).flat().filter(c=>!c.out);
  for(const k of ['manha','tarde']){
-  out.push(TN[k].toUpperCase()+' – FOLGAS DE JANEIRO 2027');
-  for(let d=1;d<=NDIAS;d++){const L=names(st[k][d]),w=working(st,k,d);if(!L.length&&w===null)continue;
-   out.push(`${WD[new Date(ANO,MES,d).getDay()]} ${two(d)}/01: ${L.length?'folga '+L.join(', '):'sem folgas'}${w===null?'':` (trabalham ${w})`}`)}
+  out.push(`${TN[k].toUpperCase()} – FOLGAS DE ${MESES[mes].toUpperCase()} ${ANO}`);
+  for(const c of cells){const L=names(st[k][c.k]),w=working(st,k,c);if(!L.length&&w===null)continue;
+   out.push(`${WD[c.wd]} ${two(c.d)}/${two(c.m)}: ${L.length?'folga '+L.join(', '):'sem folgas'}${w===null?'':` (trabalham ${w})`}`)}
   out.push('');
  }
  return out.join('\n');
@@ -237,80 +251,92 @@ function asText(){
 /*PDF-START*/
 function loadPDF(){return window.jspdf?Promise.resolve(window.jspdf):new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';s.onload=()=>res(window.jspdf);s.onerror=rej;document.head.appendChild(s)})}
 function fitText(doc,t,w){if(doc.getTextWidth(t)<=w)return t;while(t.length>1&&doc.getTextWidth(t+'…')>w)t=t.slice(0,-1);return t+'…'}
-function drawPDF(jsPDF){
+function drawPDF(jsPDF,months){
  const doc=new jsPDF({orientation:'landscape',unit:'mm',format:'a4'});
- const W=297,H=210,M=6,wk=weeks(),S=clean(st);S.equipe=st.equipe;
+ const W=297,H=210,M=6,S=clean(st);S.equipe=st.equipe;
  const BG=[14,74,90],BAND=[18,90,108],CARD=[26,113,134],SUN=[255,201,60],CORAL=[231,111,81],MUT=[207,230,236],WHITE=[255,255,255],TEAL=[14,74,90],GREY=[61,100,112],LINEC=[214,228,232],ROSE=[255,241,236];
  const mix=(a,b,p)=>a.map((v,i)=>Math.round(v+(b[i]-v)*p));
  const badge=(x,cy,d,faded)=>{const r=4.5,bx=x+3.3,by=cy+3.3;doc.setLineWidth(0.45);doc.setFillColor(...(faded?mix(BAND,[68,114,196],0.35):[68,114,196]));doc.setDrawColor(...(faded?mix(BAND,[47,82,143],0.35):[47,82,143]));doc.circle(bx,by,r,'FD');doc.setFont('helvetica','bold');doc.setFontSize(String(d).length>1?13.5:15);doc.setTextColor(...(faded?mix(BAND,WHITE,0.5):WHITE));doc.text(String(d),bx,by+1.75,{align:'center'});doc.setLineWidth(0.2)};
- const HEADH=11,SUMH=29,GAP=1.6,bandsTop=M+HEADH,bandsH=H-M-SUMH-GAP-bandsTop;
- const wt=wk.map(week=>week.some(c=>!c.out&&c.d>=S.inicio)?1:0.62),wsum=wt.reduce((a,b)=>a+b,0),unit=(bandsH-GAP*(wk.length-1))/wsum;
+ const HEADH=11,SUMH=30,GAP=1.5,bandsTop=M+HEADH,bandsH=H-M-SUMH-GAP-bandsTop;
  const LBLW=19,cg=1.4,innerX=M+LBLW,cardW=(W-M-1.2-innerX-cg*6)/7;
- ['manha','tarde'].forEach((k,pi)=>{
-  if(pi)doc.addPage();
-  const size=S.equipe[k].length;
-  doc.setFillColor(...BG);doc.rect(0,0,W,H,'F');
-  doc.setFont('helvetica','bold');doc.setFontSize(16);doc.setTextColor(...WHITE);doc.text('Folgas da '+TS[k],M+1,M+7.2);
-  const tw=doc.getTextWidth('Folgas da '+TS[k]);doc.setFontSize(10);doc.setTextColor(...SUN);doc.text('Janeiro 2027',M+4+tw,M+7.2);
-  doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(...MUT);
-  doc.text(fitText(doc,`Equipe: ${size} pessoas (${S.equipe[k].join(', ')})`,150),W-M-1,M+3.8,{align:'right'});
-  doc.text('Número amarelo: quantos trabalham. Nomes: quem folga.',W-M-1,M+8,{align:'right'});
-  let y=bandsTop;
-  wk.forEach((week,i)=>{
-   const bh=unit*wt[i];
-   doc.setFillColor(...BAND);doc.roundedRect(M,y,W-2*M,bh,2.5,2.5,'F');
-   doc.setFont('helvetica','bold');doc.setFontSize(8.5);doc.setTextColor(...SUN);doc.text('Semana '+(i+1),M+2,y+bh/2-1.5);
-   doc.setFont('helvetica','normal');doc.setFontSize(6.5);doc.setTextColor(...MUT);doc.text(fmt(week[0])+' a',M+2,y+bh/2+1.8);doc.text(fmt(week[6]),M+2,y+bh/2+4.6);
-   week.forEach((cl,j)=>{
-    const x=innerX+j*(cardW+cg),cy=y+1.2,ch=bh-2.4,cx=x+cardW/2,dom=cl.wd===0,cc=dom?CORAL:CARD;
-    if(cl.out){doc.setDrawColor(...mix(BAND,WHITE,0.25));doc.setLineWidth(0.2);doc.setLineDashPattern([0.8,0.8],0);doc.roundedRect(x,cy,cardW,ch,2,2,'S');doc.setLineDashPattern([],0);badge(x,cy,cl.d,true);doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(...mix(BAND,WHITE,0.45));doc.text(WDL[cl.wd],x+9.8,cy+5.4);return}
-    doc.setFillColor(...cc);doc.roundedRect(x,cy,cardW,ch,2,2,'F');
-    const sub=dom?ROSE:MUT,lc=mix(cc,WHITE,0.32);
-    doc.setFont('helvetica','normal');doc.setFontSize(9.5);doc.setTextColor(...WHITE);doc.text(WDL[cl.wd],x+9.8,cy+5.5);
-    doc.setDrawColor(...lc);doc.setLineWidth(0.25);doc.line(x+1.5,cy+9,x+cardW-1.5,cy+9);
-    badge(x,cy,cl.d,false);
-    const w=working(S,k,cl.d),fy=cy+ch-1.9,sepY=cy+ch-6;
-    doc.setDrawColor(...lc);doc.line(x+1.5,sepY,x+cardW-1.5,sepY);
-    if(w!==null){doc.setFont('helvetica','bold');doc.setFontSize(11);doc.setTextColor(...(dom?[255,246,214]:SUN));doc.text(String(w),x+1.8,fy);const nw=doc.getTextWidth(String(w));doc.setFontSize(7.5);doc.setTextColor(...WHITE);doc.text('trabalham',x+2.8+nw,fy)}
-    else if(cl.d<S.inicio){doc.setFont('helvetica','normal');doc.setFontSize(6.3);doc.setTextColor(...sub);doc.text('Antes da escala',x+1.8,fy)}
-    if(FERS[cl.d]){doc.setFont('helvetica','bold');doc.setFontSize(5.3);doc.setTextColor(255,231,163);doc.text(FERS[cl.d],x+cardW-1.4,fy,{align:'right'})}
-    const L=S[k][cl.d]||[],yE=cy+9.9,bottom=sepY-0.8;
-    if(bottom-yE<2)return;
-    if(!L.length){doc.setDrawColor(...mix(cc,WHITE,0.22));for(let yy=yE+4.6;yy<bottom-1.6;yy+=4.8)doc.line(x+1.8,yy,x+cardW-1.8,yy);return}
-    const avail=bottom-yE,cols=L.length*3.9>avail?2:1,nr=Math.ceil(L.length/cols);let lh=Math.min(4.8,avail/nr);
-    const fs=Math.max(5,Math.min(cols>1?9:10.5,lh/0.42)),cw=(cardW-3)/cols;
-    doc.setFont('helvetica','bold');doc.setFontSize(fs);doc.setTextColor(...WHITE);
-    L.forEach((p,n)=>{const ci=Math.floor(n/nr),by=yE+(n%nr)*lh+lh*0.8;doc.setFillColor(...(dom?[255,246,214]:SUN));doc.circle(x+2.4+ci*cw,by-fs*0.12,0.65,'F');doc.text(fitText(doc,p.nome,cw-3.4),x+3.9+ci*cw,by)});
+ let first=true;
+ months.forEach(m=>{
+  const wk=weeks(m),wt=wk.map(week=>week.some(c=>!c.out&&!c.pre)?1:0.62),wsum=wt.reduce((a,b)=>a+b,0),unit=(bandsH-GAP*(wk.length-1))/wsum;
+  ['manha','tarde'].forEach(k=>{
+   if(!first)doc.addPage();first=false;
+   const size=S.equipe[k].length;
+   doc.setFillColor(...BG);doc.rect(0,0,W,H,'F');
+   doc.setFont('helvetica','bold');doc.setFontSize(16);doc.setTextColor(...WHITE);doc.text('Folgas da '+TS[k],M+1,M+7.2);
+   const tw=doc.getTextWidth('Folgas da '+TS[k]);doc.setFontSize(10);doc.setTextColor(...SUN);doc.text(MESES[m]+' '+ANO,M+4+tw,M+7.2);
+   doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(...MUT);
+   doc.text(fitText(doc,`Equipe: ${size} pessoas (${S.equipe[k].join(', ')})`,150),W-M-1,M+3.8,{align:'right'});
+   doc.text('Número amarelo: quantos trabalham. Nomes: quem folga.',W-M-1,M+8,{align:'right'});
+   let y=bandsTop;
+   wk.forEach((week,i)=>{
+    const bh=unit*wt[i];
+    doc.setFillColor(...BAND);doc.roundedRect(M,y,W-2*M,bh,2.5,2.5,'F');
+    doc.setFont('helvetica','bold');doc.setFontSize(8.5);doc.setTextColor(...SUN);doc.text('Semana '+(i+1),M+2,y+bh/2-1.5);
+    doc.setFont('helvetica','normal');doc.setFontSize(6.5);doc.setTextColor(...MUT);doc.text(fmt(week[0])+' a',M+2,y+bh/2+1.8);doc.text(fmt(week[6]),M+2,y+bh/2+4.6);
+    week.forEach((cl,j)=>{
+     const x=innerX+j*(cardW+cg),cy=y+1.2,ch=bh-2.4,dom=cl.wd===0,cc=dom?CORAL:CARD;
+     if(cl.out){doc.setDrawColor(...mix(BAND,WHITE,0.25));doc.setLineWidth(0.2);doc.setLineDashPattern([0.8,0.8],0);doc.roundedRect(x,cy,cardW,ch,2,2,'S');doc.setLineDashPattern([],0);badge(x,cy,cl.d,true);doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(...mix(BAND,WHITE,0.45));doc.text(WDL[cl.wd],x+9.8,cy+5.4);return}
+     doc.setFillColor(...cc);doc.roundedRect(x,cy,cardW,ch,2,2,'F');
+     const sub=dom?ROSE:MUT,lc=mix(cc,WHITE,0.32);
+     doc.setFont('helvetica','normal');doc.setFontSize(9.5);doc.setTextColor(...WHITE);doc.text(WDL[cl.wd],x+9.8,cy+5.5);
+     doc.setDrawColor(...lc);doc.setLineWidth(0.25);doc.line(x+1.5,cy+9,x+cardW-1.5,cy+9);
+     badge(x,cy,cl.d,false);
+     const w=working(S,k,cl),fy=cy+ch-1.9,sepY=cy+ch-6;
+     doc.setDrawColor(...lc);doc.line(x+1.5,sepY,x+cardW-1.5,sepY);
+     if(w!==null){doc.setFont('helvetica','bold');doc.setFontSize(11);doc.setTextColor(...(dom?[255,246,214]:SUN));doc.text(String(w),x+1.8,fy);const nw=doc.getTextWidth(String(w));doc.setFontSize(7.5);doc.setTextColor(...WHITE);doc.text('trabalham',x+2.8+nw,fy)}
+     else if(cl.pre){doc.setFont('helvetica','normal');doc.setFontSize(6.3);doc.setTextColor(...sub);doc.text('Antes da escala',x+1.8,fy)}
+     if(FERS[cl.k]){doc.setFont('helvetica','bold');doc.setFontSize(5.3);doc.setTextColor(255,231,163);doc.text(FERS[cl.k],x+cardW-1.4,fy,{align:'right'})}
+     const L=S[k][cl.k]||[],yE=cy+9.9,bottom=sepY-0.8;
+     if(bottom-yE<2)return;
+     if(!L.length){doc.setDrawColor(...mix(cc,WHITE,0.22));for(let yy=yE+4.6;yy<bottom-1.6;yy+=4.8)doc.line(x+1.8,yy,x+cardW-1.8,yy);return}
+     const avail=bottom-yE;doc.setFont('helvetica','bold');
+     let best=null;for(let cols=1;cols<=3;cols++){const nr=Math.ceil(L.length/cols),lh=Math.min(4.8,avail/nr),cw=(cardW-3)/cols;let fs=Math.min(cols>1?9:10.5,lh/0.42);doc.setFontSize(fs);const wid=Math.max(...L.map(p=>doc.getTextWidth(p.nome)));if(wid>cw-3.6)fs=fs*(cw-3.6)/wid;if(!best||fs>best.fs+0.2)best={cols,nr,lh,cw,fs}}
+     const {cols,nr,lh,cw}=best,fs=Math.max(5,best.fs);
+     doc.setFontSize(fs);doc.setTextColor(...WHITE);
+     L.forEach((p,n)=>{const ci=Math.floor(n/nr),by=yE+(n%nr)*lh+lh*0.8;doc.setFillColor(...(dom?[255,246,214]:SUN));doc.circle(x+2.4+ci*cw,by-fs*0.12,fs>7?0.65:0.5,'F');doc.text(fitText(doc,p.nome,cw-3.4),x+3.7+ci*cw,by)});
+    });
+    y+=bh+GAP;
    });
-   y+=bh+GAP;
-  });
-  // resumo semanal compacto
-  const sy=H-M-SUMH;
-  doc.setFillColor(...WHITE);doc.roundedRect(M,sy,W-2*M,SUMH,2.5,2.5,'F');
-  const cW=[40,...Array(7).fill(25),30,26],x0=M+4,cx=[x0];cW.forEach((v,i)=>cx.push(cx[i]+v));
-  let mt=0;const rows=wk.map(week=>{const s=weekStats(S,k,week);mt+=s.tot;return s});
-  doc.setTextColor(...TEAL);doc.setFont('helvetica','bold');doc.setFontSize(9.5);doc.text('Quantas pessoas trabalham por semana',x0+1,sy+5.2);
-  doc.setFontSize(8);doc.text('Total de janeiro: '+mt,cx[10],sy+5.2,{align:'right'});
-  const hy=sy+6.6,hh=4,rh=3.5;
-  doc.setFontSize(7);
-  ['Semana',...ORD.map(i=>WD[i]),'Total na semana','Média por dia'].forEach((t,i)=>{doc.setTextColor(...(i===7?[194,69,42]:TEAL));doc.text(t,i?cx[i]+cW[i]/2:cx[i]+1,hy+2.9,i?{align:'center'}:{})});
-  doc.setDrawColor(...TEAL);doc.setLineWidth(0.35);doc.line(x0,hy+hh,cx[10],hy+hh);doc.setLineWidth(0.2);
-  wk.forEach((week,r)=>{
-   const yy=hy+hh+r*rh,s=rows[r];
-   doc.setFont('helvetica','bold');doc.setFontSize(7);doc.setTextColor(...TEAL);doc.text('Semana '+(r+1),x0+1,yy+2.6);
-   doc.setFont('helvetica','normal');doc.setFontSize(6);doc.setTextColor(...GREY);doc.text(fmt(week[0])+' a '+fmt(week[6]),x0+15,yy+2.6);
-   s.v.forEach((v,j)=>{const xx=cx[j+1];
-    if(v===null){doc.setTextColor(124,152,160);doc.setFont('helvetica','normal');doc.setFontSize(7);doc.text('–',xx+cW[j+1]/2,yy+2.6,{align:'center'});return}
-    doc.setFillColor(...mix(WHITE,SUN,size?0.12+0.78*v/size:0));doc.rect(xx,yy+0.15,cW[j+1],rh-0.3,'F');
-    doc.setTextColor(...TEAL);doc.setFont('helvetica','bold');doc.setFontSize(7.5);doc.text(String(v),xx+cW[j+1]/2,yy+2.6,{align:'center'})});
-   doc.setTextColor(...TEAL);doc.setFont('helvetica','bold');doc.setFontSize(8);
-   doc.text(s.days?String(s.tot):'–',cx[8]+cW[8]/2,yy+2.6,{align:'center'});doc.setFontSize(7.5);doc.text(s.avg===null?'–':dec(s.avg),cx[9]+cW[9]/2,yy+2.6,{align:'center'});
-   if(r<wk.length-1){doc.setDrawColor(...LINEC);doc.line(x0,yy+rh,cx[10],yy+rh)}
+   const sy=H-M-SUMH;
+   doc.setFillColor(...WHITE);doc.roundedRect(M,sy,W-2*M,SUMH,2.5,2.5,'F');
+   const cW=[40,...Array(7).fill(25),30,26],x0=M+4,cx=[x0];cW.forEach((v,i)=>cx.push(cx[i]+v));
+   let mt=0;const rows=wk.map(week=>{const s=weekStats(S,k,week);mt+=s.tot;return s});
+   doc.setTextColor(...TEAL);doc.setFont('helvetica','bold');doc.setFontSize(9.5);doc.text('Quantas pessoas trabalham por semana',x0+1,sy+5.2);
+   doc.setFontSize(8);doc.text(`Total de ${MESES[m].toLowerCase()}: ${mt}`,cx[10],sy+5.2,{align:'right'});
+   const hy=sy+6.6,hh=4,rh=Math.min(3.5,(SUMH-hh-8)/wk.length);
+   doc.setFontSize(7);
+   ['Semana',...ORD.map(i=>WD[i]),'Total na semana','Média por dia'].forEach((t,i)=>{doc.setTextColor(...(i===7?[194,69,42]:TEAL));doc.text(t,i?cx[i]+cW[i]/2:cx[i]+1,hy+2.9,i?{align:'center'}:{})});
+   doc.setDrawColor(...TEAL);doc.setLineWidth(0.35);doc.line(x0,hy+hh,cx[10],hy+hh);doc.setLineWidth(0.2);
+   const fsz=rh<3.3?6.4:7,by=rh*0.74;
+   wk.forEach((week,r)=>{
+    const yy=hy+hh+r*rh,s=rows[r];
+    doc.setFont('helvetica','bold');doc.setFontSize(fsz);doc.setTextColor(...TEAL);doc.text('Semana '+(r+1),x0+1,yy+by);
+    doc.setFont('helvetica','normal');doc.setFontSize(fsz-1);doc.setTextColor(...GREY);doc.text(fmt(week[0])+' a '+fmt(week[6]),x0+15,yy+by);
+    s.v.forEach((v,j)=>{const xx=cx[j+1];
+     if(v===null){doc.setTextColor(124,152,160);doc.setFont('helvetica','normal');doc.setFontSize(fsz);doc.text('–',xx+cW[j+1]/2,yy+by,{align:'center'});return}
+     doc.setFillColor(...mix(WHITE,SUN,size?0.12+0.78*v/size:0));doc.rect(xx,yy+0.15,cW[j+1],rh-0.3,'F');
+     doc.setTextColor(...TEAL);doc.setFont('helvetica','bold');doc.setFontSize(fsz+0.5);doc.text(String(v),xx+cW[j+1]/2,yy+by,{align:'center'})});
+    doc.setTextColor(...TEAL);doc.setFont('helvetica','bold');doc.setFontSize(fsz+1);
+    doc.text(s.days?String(s.tot):'–',cx[8]+cW[8]/2,yy+by,{align:'center'});doc.setFontSize(fsz+0.5);doc.text(s.avg===null?'–':dec(s.avg),cx[9]+cW[9]/2,yy+by,{align:'center'});
+    if(r<wk.length-1){doc.setDrawColor(...LINEC);doc.line(x0,yy+rh,cx[10],yy+rh)}
+   });
   });
  });
  return doc.output('arraybuffer');
 }
 /*PDF-END*/
+function fileOut(name,data,type){if(dl)return dl.save({filename:name,data});const u=URL.createObjectURL(new Blob([data],{type}));const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),8000);return Promise.resolve()}
+function flash(t,ms){msg=t;status();setTimeout(()=>{msg='';status()},ms||6000)}
+async function makePDF(months,name){
+ if(!dl&&HOSTED)return;msg=months.length>1?'Gerando o PDF do ano (24 páginas)…':'Gerando o PDF…';status();
+ try{const {jsPDF}=await loadPDF();await fileOut(name,drawPDF(jsPDF,months),'application/pdf');flash(months.length>1?'PDF do ano pronto: duas páginas por mês, manhã e tarde.':'PDF pronto: página 1 manhã e página 2 tarde.')}
+ catch(e){const c=e&&e.code;flash(c==='declined'?'Download cancelado.':c==='rate_limited'?'Já há um download aberto; tente de novo em instantes.':c?'O download não está disponível nesta visualização.':'Não foi possível gerar o PDF agora.')}
+}
+function setMes(m){mes=Math.max(0,Math.min(11,m));try{localStorage.setItem(LSM,String(mes))}catch(e){}render();window.scrollTo(0,0)}
 
 $('cal').addEventListener('input',e=>{
  const t=e.target;if(!t.classList.contains('nm'))return;
@@ -328,33 +354,31 @@ $('cal').addEventListener('click',e=>{
 });
 for(const b of document.querySelectorAll('.tab'))b.addEventListener('click',()=>{tab=b.dataset.t;location.hash=tab;$('eqbox').hidden=true;render()});
 window.addEventListener('hashchange',()=>{const t=location.hash==='#tarde'?'tarde':'manha';if(t!==tab){tab=t;render()}});
+$('msel').innerHTML=MESES.map((n,i)=>`<option value="${i}">${n} ${ANO}</option>`).join('');
+$('msel').addEventListener('change',()=>setMes(+$('msel').value));
+$('mprev').addEventListener('click',()=>setMes(mes-1));
+$('mnext').addEventListener('click',()=>setMes(mes+1));
 $('eqbtn').addEventListener('click',()=>{$('eqta').value=st.equipe[tab].join('\n');$('eqbox').hidden=false;$('eqta').focus()});
 $('eqno').addEventListener('click',()=>{$('eqbox').hidden=true});
 $('eqok').addEventListener('click',()=>{st.equipe[tab]=$('eqta').value.split('\n').map(s=>s.trim()).filter(Boolean);$('eqbox').hidden=true;mark();render()});
 $('sv').addEventListener('click',save);
 $('clr').addEventListener('click',()=>{$('cf').hidden=false;$('clr').hidden=true});
 $('cfn').addEventListener('click',()=>{$('cf').hidden=true;$('clr').hidden=false});
-$('cfy').addEventListener('click',()=>{st[tab]={};$('cf').hidden=true;$('clr').hidden=false;mark();render()});
+$('cfy').addEventListener('click',()=>{for(const k of Object.keys(CELLS))delete st[tab][k];$('cf').hidden=true;$('clr').hidden=false;mark();render()});
 $('cp').addEventListener('click',async()=>{
- try{await navigator.clipboard.writeText(asText());msg='Escala copiada como texto. Cole no SeaTalk, e-mail ou planilha.'}
- catch(e){msg='O navegador bloqueou a cópia nesta visualização.'}
- status();setTimeout(()=>{msg='';status()},4000);
+ try{await navigator.clipboard.writeText(asText());flash('Escala do mês copiada como texto. Cole no WhatsApp, e-mail ou planilha.',4000)}
+ catch(e){flash('O navegador bloqueou a cópia nesta visualização.',4000)}
 });
-function fileOut(name,data,type){if(dl)return dl.save({filename:name,data});const u=URL.createObjectURL(new Blob([data],{type}));const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),8000);return Promise.resolve()}
-$('ex').addEventListener('click',async()=>{try{await fileOut('escala-janeiro-2027.json',JSON.stringify(clean(st),null,1),'application/json');msg='Arquivo exportado. No outro computador, abra este link e use “Importar arquivo”.'}catch(e){msg='Não foi possível exportar agora.'}status();setTimeout(()=>{msg='';status()},6000)});
+$('ex').addEventListener('click',async()=>{try{await fileOut('escala-2027.json',JSON.stringify(clean(st),null,1),'application/json');flash('Arquivo exportado. No outro computador, abra este link e use “Importar arquivo”.')}catch(e){flash('Não foi possível exportar agora.')}});
 $('im').addEventListener('click',()=>$('imf').click());
-$('imf').addEventListener('change',async()=>{const f=$('imf').files[0];$('imf').value='';if(!f)return;try{const o=JSON.parse(await f.text());if(!o||typeof o.manha!=='object'||typeof o.tarde!=='object')throw 0;st=fixState(o);st.rev=saved.rev;mark();render();msg='Escala importada do arquivo.'}catch(e){msg='Esse arquivo não é uma escala exportada por esta página.'}status();setTimeout(()=>{msg='';status()},6000)});
-$('pdf').addEventListener('click',async()=>{
- if(!dl&&HOSTED)return;msg='Gerando o PDF…';status();
- try{const {jsPDF}=await loadPDF();await fileOut('folgas-janeiro-2027.pdf',drawPDF(jsPDF),'application/pdf');msg='PDF pronto: A4 deitado, página 1 manhã e página 2 tarde.'}
- catch(e){const c=e&&e.code;msg=c==='declined'?'Download cancelado.':c==='rate_limited'?'Já há um download aberto; tente de novo em instantes.':c?'O download não está disponível nesta visualização.':'Não foi possível gerar o PDF agora.'}
- status();setTimeout(()=>{msg='';status()},6000);
-});
+$('imf').addEventListener('change',async()=>{const f=$('imf').files[0];$('imf').value='';if(!f)return;try{const o=JSON.parse(await f.text());if(!o||typeof o.manha!=='object'||typeof o.tarde!=='object')throw 0;st=fixState(o);st.rev=saved.rev;mark();render();flash('Escala importada do arquivo.')}catch(e){flash('Esse arquivo não é uma escala exportada por esta página.')}});
+$('pdf').addEventListener('click',()=>makePDF([mes],`folgas-${MESES[mes].toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'')}-${ANO}.pdf`));
+$('pdfy').addEventListener('click',()=>makePDF([0,1,2,3,4,5,6,7,8,9,10,11],`folgas-${ANO}-ano-completo.pdf`));
 render();
-if(!HOSTED){for(const id of ['pdf','ex','im'])$(id).hidden=false}
+if(!HOSTED){for(const id of ['pdf','pdfy','ex','im'])$(id).hidden=false}
 if(window.claude&&typeof claude.use==='function'){
  claude.use('artifact').then(a=>{api=a;status()}).catch(()=>{});
- claude.use('downloads').then(d=>{dl=d;$('pdf').hidden=!d}).catch(()=>{});
+ claude.use('downloads').then(d=>{dl=d;$('pdf').hidden=!d;$('pdfy').hidden=!d}).catch(()=>{});
 }
 }
 </script></body></html>
